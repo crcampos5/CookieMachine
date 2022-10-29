@@ -1,0 +1,4 @@
+gui/__pycache__/
+gui/controls/__pycache__/
+models/__pycache__/
+sensors/__pycache__/
