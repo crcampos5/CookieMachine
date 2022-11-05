@@ -6,9 +6,10 @@ import os
 import cv2 as cv
 
 class MoveFrame(ComponentFrame):
-    def __init__(self,parent) -> None:
+    def __init__(self,parent,cnc) -> None:
         super().__init__(parent)
         self.parent = parent
+        self.cnc = cnc
         self.list_und = ['1 mm','0.1 mm']
         self.selected_und = tk.StringVar(self)
         self.selected_und.set(self.list_und[0])
@@ -18,7 +19,7 @@ class MoveFrame(ComponentFrame):
         img_right_move = ImageTk.PhotoImage(file= 'asset/right_move.png')
         img_top_move = ImageTk.PhotoImage(file= 'asset/top_move.png')
 
-        btn_xplus = tk.Button(self,text='>',image=img_right_move,width=35)
+        btn_xplus = tk.Button(self,text='>',image=img_right_move,width=35,command=self.cnc.move)
         btn_xplus.image = img_right_move
         btn_xminus = tk.Button(self,text='<',image=img_left_move,width=35)
         btn_xminus.image = img_left_move

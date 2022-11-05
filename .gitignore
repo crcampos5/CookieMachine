@@ -2,3 +2,4 @@ gui/__pycache__/
 gui/controls/__pycache__/
 models/__pycache__/
 sensors/__pycache__/
+cnc/__pycache__/

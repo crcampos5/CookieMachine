@@ -1,6 +1,7 @@
 from distutils.log import info
 import tkinter as tk
 from turtle import bgcolor
+from cnc.cnc import Cnc
 from gui.controls.cameraframe import CameraFrame
 from gui.controls.laserframe import LaserFrame
 from gui.controls.valveframe import ValveFrame
@@ -26,15 +27,16 @@ class MainWindow:
         self.camera_sensor = CameraSensor(self.imagen1)
         self.laser_sensor = LaserSensor(self.imagen2)
         
+        self.cnc = Cnc()
 
 
         # defines the primary frames
-        topbar_frame = TopBarFrame(self.root) 
+        topbar_frame = TopBarFrame(self.root,self.cnc) 
         images_frame = ImagesFrame(self.root,self.imagen1,self.imagen2)
         info_frame = InfoFrame(self.root)
         controls_frame = tk.Frame(self.root)
         runstop_frame = RunStopFrame(controls_frame)
-        move_frame = MoveFrame(controls_frame)
+        move_frame = MoveFrame(controls_frame,self.cnc)
         speed_frame = SpeedFrame(controls_frame)
         valve_frame = ValveFrame(controls_frame)
         laser_frame = LaserFrame(controls_frame,self.laser_sensor)
