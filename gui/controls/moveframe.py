@@ -10,7 +10,7 @@ class MoveFrame(ComponentFrame):
         super().__init__(parent)
         self.parent = parent
         self.cnc = cnc
-        self.list_und = ['1 mm','0.1 mm']
+        self.list_und = ['10 mm','1 mm','0.1 mm']
         self.selected_und = tk.StringVar(self)
         self.selected_und.set(self.list_und[0])
 
@@ -19,17 +19,17 @@ class MoveFrame(ComponentFrame):
         img_right_move = ImageTk.PhotoImage(file= 'asset/right_move.png')
         img_top_move = ImageTk.PhotoImage(file= 'asset/top_move.png')
 
-        btn_xplus = tk.Button(self,text='>',image=img_right_move,width=35,command=self.cnc.move)
+        btn_xplus = tk.Button(self,text='>',image=img_right_move,width=35,command=self.move_xplus)
         btn_xplus.image = img_right_move
-        btn_xminus = tk.Button(self,text='<',image=img_left_move,width=35)
+        btn_xminus = tk.Button(self,text='<',image=img_left_move,width=35,command=self.move_xminus)
         btn_xminus.image = img_left_move
-        btn_yplus = tk.Button(self,text='^',image=img_top_move,height=35)
+        btn_yplus = tk.Button(self,text='^',image=img_top_move,height=35,command=self.move_yplus)
         btn_yplus.image = img_top_move
-        btn_yminus = tk.Button(self,text='v',image=img_bottom_move,height=35)
+        btn_yminus = tk.Button(self,text='v',image=img_bottom_move,height=35,command=self.move_yminus)
         btn_yminus.image = img_bottom_move
-        btn_zplus = tk.Button(self,text='z+',image=img_top_move,height=35)
+        btn_zplus = tk.Button(self,text='z+',image=img_top_move,height=35,command=self.move_zplus)
         btn_zplus.image = img_top_move
-        btn_zminus = tk.Button(self,text='z-',image=img_bottom_move,height=35)
+        btn_zminus = tk.Button(self,text='z-',image=img_bottom_move,height=35,command=self.move_zminus)
         btn_zminus.image = img_bottom_move
 
         lbl_und  = tk.Label(self, text='Unidad:',bg='gray90')
@@ -49,4 +49,38 @@ class MoveFrame(ComponentFrame):
 
         self.grid_propagate(0)
         self.config(width=170,height=180,bg='gray90')
-       
+    
+    def move_xplus(self):
+        distance = self._get_distance()
+        self.cnc.move('X',distance)
+
+    def move_xminus(self):
+        distance = self._get_distance()*-1
+        self.cnc.move('X',distance)
+
+    def move_yplus(self):
+        distance = self._get_distance()
+        self.cnc.move('Y',distance)
+
+    def move_yminus(self):
+        distance = self._get_distance()*-1
+        self.cnc.move('Y',distance)
+
+    def move_zplus(self):
+        distance = self._get_distance()
+        self.cnc.move('Z',distance)
+
+    def move_zminus(self):
+        distance = self._get_distance()*-1
+        self.cnc.move('Z',distance)
+
+    def _get_distance(self):
+        valor_selected = self.selected_und.get()
+        for und in self.list_und:
+            if und == valor_selected:
+                valor = float(und.split(" ")[0])
+                break
+
+        return valor
+    
+    

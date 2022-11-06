@@ -12,6 +12,8 @@ from gui.imagesframe import ImagesFrame
 from gui.topbarframe import TopBarFrame
 from gui.infoframe import InfoFrame
 from models.imagen import Imagen
+from models.message import Message
+from models.position import Position
 from sensors.camerasensor import CameraSensor
 from sensors.lasersensor import LaserSensor
 
@@ -27,13 +29,15 @@ class MainWindow:
         self.camera_sensor = CameraSensor(self.imagen1)
         self.laser_sensor = LaserSensor(self.imagen2)
         
-        self.cnc = Cnc()
+        self.msg = Message()
+        self.cnc = Cnc(self.msg)
+        self.position = Position()
 
 
         # defines the primary frames
         topbar_frame = TopBarFrame(self.root,self.cnc) 
         images_frame = ImagesFrame(self.root,self.imagen1,self.imagen2)
-        info_frame = InfoFrame(self.root)
+        info_frame = InfoFrame(self.root,self.msg,self.position)
         controls_frame = tk.Frame(self.root)
         runstop_frame = RunStopFrame(controls_frame)
         move_frame = MoveFrame(controls_frame,self.cnc)

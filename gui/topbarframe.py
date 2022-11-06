@@ -26,7 +26,7 @@ class TopBarFrame(cf.ComponentFrame):
         lbl_port  = tk.Label(wrap1, text='Port:')
         cbx_port = ttk.Combobox(wrap1,values=self.list_port,textvariable=self.selected_port)
         btn_conect = tk.Button(wrap1,text='Conectar')
-        btn_alarm = tk.Button(wrap1,text='Alarma',command=self.cnc.disable_alarm)
+        btn_alarm = tk.Button(wrap1,text='Unlock',command=self.cnc.disable_alarm)
 
         lbl_design  = tk.Label(self, text='Diseño:')
         cbx_design = ttk.Combobox(self,values=self.list_design,textvariable=self.selected_design)

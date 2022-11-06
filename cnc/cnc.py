@@ -2,7 +2,8 @@ import serial.tools.list_ports
 import time
 
 class Cnc:
-    def __init__(self) -> None:
+    def __init__(self,msg) -> None:
+        self.msg = msg
         self.find_port()
         self.conect_serial()
         self.wait_idle()
@@ -19,15 +20,18 @@ class Cnc:
         time.sleep(0.1)
         print(self.conection.is_open)
 
-    def move(self):
+    def move(self,axis,value):
         print("mover")
-        self._send("G1 X-1.0 F2000")
+        code = 'G1 '+ axis + str(value)
+        data = self._send(code)
+        print(data)
         self.wait_idle()
 
     def disable_alarm(self):
-        print("desactivar alarma")
+        self.msg.insert("Desbloqueando...")
         self._send("$X")
         self.wait_idle()
+        self.msg.insert("Maquina desbloqueada")
 
     def wait_idle(self):
         while True:
@@ -41,8 +45,8 @@ class Cnc:
                    break
             else: break
 
-    def _send(self,str):
-        str_send = (str +"\r\n").encode()
+    def _send(self,code):
+        str_send = (code +"\r\n").encode()
         self.conection.write(str_send)
         time.sleep(0.001)
         data = self.conection.readline().decode('ascii')
