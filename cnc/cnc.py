@@ -10,11 +10,14 @@ class Cnc:
     def find_port(self):
         serial_list = serial.tools.list_ports.comports(include_links=False)
         for i in serial_list:
+            print("product")
+            print("Port Product", i.product)
             self.port = i.device
 
     def conect_serial(self):
         self.conection = serial.Serial(self.port, baudrate = 115200, timeout = 2)
         time.sleep(0.1)
+        print(self.conection.is_open)
 
     def move(self):
         print("mover")
@@ -36,6 +39,7 @@ class Cnc:
                elif state[1] == 'A':
                    print("[INFO] Alarm")
                    break
+            else: break
 
     def _send(self,str):
         str_send = (str +"\r\n").encode()
