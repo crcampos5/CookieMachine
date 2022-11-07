@@ -64,7 +64,7 @@ class MainWindow:
 
     def define_geometry(self):
         w = 1280 # width for the Tk root
-        h = 768 # height for the Tk root
+        h = 738 # height for the Tk root
 
         # get screen width and height
         ws = self.root.winfo_screenwidth() # width of the screen
