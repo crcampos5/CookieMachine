@@ -1,12 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
+from core.cnc.cnc import Cnc
 from gui.componentframe import ComponentFrame
 from PIL import Image, ImageTk
 import os
 import cv2 as cv
 
 class MoveFrame(ComponentFrame):
-    def __init__(self,parent,cnc) -> None:
+    def __init__(self,parent,cnc = None) -> None:
         super().__init__(parent)
         self.parent = parent
         self.cnc = cnc
@@ -50,6 +51,9 @@ class MoveFrame(ComponentFrame):
         self.grid_propagate(0)
         self.config(width=170,height=180,bg='gray90')
     
+    def set_cnc(self, cnc: Cnc):
+        self.cnc = cnc
+
     def move_xplus(self):
         distance = self._get_distance()
         self.cnc.move('X',distance)

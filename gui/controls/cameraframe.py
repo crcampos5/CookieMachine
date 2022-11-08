@@ -1,8 +1,9 @@
 import tkinter as tk
+from core.sensors.camerasensor import CameraSensor
 from gui.componentframe import ComponentFrame
 
 class CameraFrame(ComponentFrame):
-    def __init__(self,parent,camera_sensor) -> None:
+    def __init__(self,parent,camera_sensor = None) -> None:
         super().__init__(parent)
         self.parent = parent
         self.camera_sensor = camera_sensor
@@ -22,6 +23,9 @@ class CameraFrame(ComponentFrame):
 
         self.grid_propagate(0)
         self.config(width=120,height=180,bg='gray90')
+
+    def set_camera_sensor(self, cs: CameraSensor):
+        self.camera_sensor = cs
 
     def show_camera(self):
 

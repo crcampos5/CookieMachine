@@ -1,10 +1,11 @@
 import tkinter as tk
+from core.sensors.lasersensor import LaserSensor
 from gui.componentframe import ComponentFrame
 from PIL import Image, ImageTk
 import operator
 
 class LaserFrame(ComponentFrame):
-    def __init__(self,parent,laser_sensor) -> None:
+    def __init__(self,parent,laser_sensor = None) -> None:
         super().__init__(parent)
         self.parent = parent
         self.laser_sensor = laser_sensor
@@ -31,6 +32,8 @@ class LaserFrame(ComponentFrame):
         self.grid_propagate(0)
         self.config(width=130,height=180,bg='gray90')
     
+    def set_laser_sensor(self, lsr: LaserSensor):
+        self.laser_sensor = lsr
 
     def show_laser(self):
 
