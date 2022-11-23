@@ -44,10 +44,17 @@ class Cnc(Subject):
         self.wait_idle()
         #time.sleep(0.1)
 
+    def home(self):
+        code = "G10P1L20X0Y0Z0\nG1X1F100"
+        data = self._send(code)
+        self.msg.insert("Haciendo Home")
+        print("data",data)
+        self.wait_idle()
+
     def move(self,axis,value):
         print("mover")
         code = "$J=G21G91"+axis+str(value)+"F100"
-        code = "G10P1L20X0Y0Z0\nG1X1F100"
+        #code = "G10P1L20X0Y0Z0\nG1X1F100"
         print(code)
         data = self._send(code)
         print("data",data)
@@ -64,19 +71,9 @@ class Cnc(Subject):
         while sigo:
             time.sleep(0.1)
             state = self._send("?")
-            print('[INFO] Sta: ', state)
+            print('[INFO] State: ', state)
             sigo = self.process_out(state)
-            #if(len(state)>1):
-            #   if state[1] == 'I':
-            #        self.msg.insert('[INFO] State: '+state)
-            #        break
-            #   elif state[1] == 'A':
-            #       print("[INFO] Alarm")
-            #       self.msg.insert("Maquina bloqueada!")
-            #       self.alarm = True
-            #       self.notify()
-            #       break
-            #else: break
+            
 
     def _send(self,code):
         str_send = (code +"\n").encode()
@@ -89,16 +86,27 @@ class Cnc(Subject):
     def process_out(self,data):
         if(len(data)>1):
             if "Alarm" in  data:
-                a = data.find('WCO') + 3
-                x,y,z = data[a:-1].split(',')
-                self.pos.set_pos(x,y,z)
+                a = data.find('WCO')
+                if(a != -1):
+                    a = a + 4
+                    x,y,z = data[a:(a+17)].split(',')
+                    self.pos.set_pos(x,y,z)
                 self.msg.insert("Maquina bloqueada!")
                 self.alarm = True
                 self.notify()
             elif "MPos" in data:
-                a = data.find('MPos') + 4
-                x,y,z = data[a:-1].split(',')
-                self.pos.set_pos(x,y,z)
+                a = data.split("|")
+                for item in a:
+                    if "Mpos" in item:
+                        b = item.split(":")[1]
+                        x,y,z = b.split(',')
+                        self.pos.set_pos(x,y,z)
+                        break
+                #a = data.split("|")[1].split(":")[1]
+                
+                if "Idle" in data:
+                    return False
+                else: return True
             else: return True
         else: False
 

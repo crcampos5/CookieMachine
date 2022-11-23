@@ -1,4 +1,5 @@
 import tkinter as tk
+from core.cnc.cnc import Cnc
 from gui.componentframe import ComponentFrame
 
 class ValveFrame(ComponentFrame):
@@ -6,7 +7,7 @@ class ValveFrame(ComponentFrame):
         super().__init__(parent)
         self.parent = parent
 
-        btn_home = tk.Button(self,text='HOME',font=("Verdana", 14,'bold'),width=6)
+        btn_home = tk.Button(self,text='HOME',font=("Verdana", 14,'bold'),width=6,command=self.home)
         btn_valve = tk.Button(self,text='VALVE',font=("Verdana", 14,'bold'),width=6)
 
 
@@ -17,3 +18,9 @@ class ValveFrame(ComponentFrame):
 
         self.grid_propagate(0)
         self.config(width=100,height=180,bg='gray90')
+
+    def set_cnc(self, cnc: Cnc):
+        self.cnc = cnc
+
+    def home(self):
+        self.cnc.home()

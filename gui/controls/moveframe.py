@@ -84,7 +84,7 @@ class MoveFrame(ComponentFrame):
             if und == valor_selected:
                 valor = float(und.split(" ")[0])
                 break
-
+        print(valor)
         return valor
     
     
