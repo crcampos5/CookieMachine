@@ -1,7 +1,8 @@
 
 
 class Position:
-    def __init__(self) -> None:
+    def __init__(self,root) -> None:
+        self.root = root
         self.X = 1.0
         self.Y = 0.0
         self.Z = 0.0
@@ -20,3 +21,4 @@ class Position:
         self.disx.config(text = str(x))
         self.disy.config(text = str(y))
         self.disz.config(text = str(z))
+        self.root.update_idletasks()

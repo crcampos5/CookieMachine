@@ -1,4 +1,5 @@
 import tkinter as tk
+from core.cnc.cnc import Cnc
 from core.sensors.lasersensor import LaserSensor
 from gui.componentframe import ComponentFrame
 from PIL import Image, ImageTk
@@ -32,6 +33,9 @@ class LaserFrame(ComponentFrame):
         self.grid_propagate(0)
         self.config(width=130,height=180,bg='gray90')
     
+    def set_cnc(self, cnc: Cnc):
+        self.cnc = cnc
+
     def set_laser_sensor(self, lsr: LaserSensor):
         self.laser_sensor = lsr
 
@@ -44,8 +48,10 @@ class LaserFrame(ComponentFrame):
     def activate_laser(self):
         self.activ_laser = operator.not_(self.activ_laser)
         if self.activ_laser :
+            self.cnc.laseronoff(True)
             self.btn_laser.config(image = self.img_on)
             self.btn_laser.image = self.img_on
         else:
+            self.cnc.laseronoff(False)
             self.btn_laser.config(image = self.img_off)
             self.btn_laser.image = self.img_off

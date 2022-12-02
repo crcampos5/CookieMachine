@@ -45,7 +45,7 @@ class Cnc(Subject):
         #time.sleep(0.1)
 
     def home(self):
-        code = "G10P1L20X0Y0Z0\nG1X1F100"
+        code = "$H"
         data = self._send(code)
         self.msg.insert("Haciendo Home")
         print("data",data)
@@ -69,7 +69,7 @@ class Cnc(Subject):
     def wait_idle(self):
         sigo = True
         while sigo:
-            time.sleep(0.1)
+            time.sleep(0.3)
             state = self._send("?")
             print('[INFO] State: ', state)
             sigo = self.process_out(state)
@@ -95,13 +95,19 @@ class Cnc(Subject):
                 self.alarm = True
                 self.notify()
             elif "MPos" in data:
-                a = data.split("|")
-                for item in a:
-                    if "Mpos" in item:
-                        b = item.split(":")[1]
-                        x,y,z = b.split(',')
-                        self.pos.set_pos(x,y,z)
-                        break
+                #a = data.split("|")
+                a = data.find("MPos") + 5
+                b = data.find("F") - 1
+                x,y,z = data[a:b].split(',')
+                self.pos.set_pos(x,y,z)        
+                #print(x,y,z)     
+                #for item in a:
+                #    if "Mpos" in item:
+                #        b = item.split(":")[1]
+                #        x,y,z = b.split(',')
+                #        self.pos.set_pos(x,y,z)
+                #        print(x,y,z)
+                #        break
                 #a = data.split("|")[1].split(":")[1]
                 
                 if "Idle" in data:
@@ -110,5 +116,15 @@ class Cnc(Subject):
             else: return True
         else: False
 
+    def laseronoff(self, ban: bool):
+        if ban :
+            self.msg.insert("Activando laser")
+            data = self._send("G1 S50 F100")
+            print(data)
+            data = self._send("M3")
+        else :
+            data = self._send("M5")
+            self.msg.insert("Desactivando laser")
+            print(data)
         
 

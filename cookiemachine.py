@@ -31,7 +31,7 @@ class MainWindow:
         self.laser_sensor = LaserSensor(self.imagen2)
         
         self.msg = Message()
-        self.position = Position()
+        self.position = Position(self.root)
         self.cnc = Cnc(self.msg,self.position)        
         self.cnc.attach(self.topbar_frame)
 
@@ -42,6 +42,7 @@ class MainWindow:
         self.move_frame.set_cnc(self.cnc)
         self.valve_frame.set_cnc(self.cnc)
         self.laser_frame.set_laser_sensor(self.laser_sensor)
+        self.laser_frame.set_cnc(self.cnc)
         self.camera_frame.set_camera_sensor(self.camera_sensor)
         self.cnc.notify()
 
@@ -87,7 +88,7 @@ class MainWindow:
         self.laser_frame.grid(row=0,column=4,padx=5)
         self.camera_frame.grid(row=0,column=5)
 
-
+ 
 app = tk.Tk()
 window = MainWindow(app)
 app.mainloop()
