@@ -3,7 +3,7 @@ import cv2 as cv
 class LaserSensor:
     def __init__(self,imagen) -> None:
         self.imagen = imagen
-        self.cap = cv.VideoCapture(0,cv.CAP_DSHOW)
+        self.cap = cv.VideoCapture(2,cv.CAP_DSHOW)
         self.exitcap = False
 
     def video(self):

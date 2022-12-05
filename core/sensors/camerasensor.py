@@ -3,7 +3,7 @@ import cv2 as cv
 class CameraSensor:
     def __init__(self,imagen) -> None:
         self.imagen = imagen
-        self.cap = cv.VideoCapture(1,cv.CAP_DSHOW)
+        self.cap = cv.VideoCapture(0,cv.CAP_DSHOW)
         self.exitcap = False
 
     def video(self):

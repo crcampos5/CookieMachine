@@ -53,7 +53,7 @@ class Cnc(Subject):
 
     def move(self,axis,value):
         print("mover")
-        code = "$J=G21G91"+axis+str(value)+"F100"
+        code = "$J=G21G91"+axis+str(value)+"F"+str(self.pos.F)
         #code = "G10P1L20X0Y0Z0\nG1X1F100"
         print(code)
         data = self._send(code)

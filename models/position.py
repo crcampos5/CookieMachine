@@ -6,7 +6,7 @@ class Position:
         self.X = 1.0
         self.Y = 0.0
         self.Z = 0.0
-        self.F = 100
+        self.F = 200
     
     def set_displays(self,disx,disy,disz):
         self.disx = disx

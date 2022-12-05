@@ -40,6 +40,7 @@ class MainWindow:
         self.info_frame.set_msg(self.msg)
         self.info_frame.set_pos(self.position)
         self.move_frame.set_cnc(self.cnc)
+        self.speed_frame.set_pos(self.position)
         self.valve_frame.set_cnc(self.cnc)
         self.laser_frame.set_laser_sensor(self.laser_sensor)
         self.laser_frame.set_cnc(self.cnc)
