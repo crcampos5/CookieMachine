@@ -2,6 +2,7 @@ from distutils.log import info
 import tkinter as tk
 from turtle import bgcolor
 from core.cnc.cnc import Cnc
+from core.core import Core
 from gui.controls.cameraframe import CameraFrame
 from gui.controls.laserframe import LaserFrame
 from gui.controls.valveframe import ValveFrame
@@ -34,6 +35,7 @@ class MainWindow:
         self.position = Position(self.root)
         self.cnc = Cnc(self.msg,self.position)        
         self.cnc.attach(self.topbar_frame)
+        self.core = Core(self.camera_sensor,self.laser_sensor,self.cnc)
 
         self.topbar_frame.set_cnc(self.cnc)
         self.images_frame.set_displays(self.imagen1,self.imagen2)

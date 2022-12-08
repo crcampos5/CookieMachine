@@ -29,7 +29,7 @@ class InfoFrame(ComponentFrame):
         self.btn_Z.image = img_z
         self.lbl_Zbox  = tk.Label(self, text=str(0.0),bg='white',width=14,font=("Verdana", 18))
 
-        self.lbl_console  = scrolledtext.ScrolledText(self,wrap = tk.WORD,bg='white',width=28,height=23)
+        self.lbl_console  = scrolledtext.ScrolledText(self,wrap = tk.WORD,bg='white',width=28,height=22)
 
         
 

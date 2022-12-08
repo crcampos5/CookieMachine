@@ -13,8 +13,11 @@ class Imagen:
         self.cargar()
 
     def cargar(self):
-        pass
-        #self.imagen = cv.imread(name)
+        ret, imagen = self.cap.read()
+        if ret == True:    
+            self.imagen = imagen
+            self.show()
+        else: self.cap.release()
 
     
     def set(self, imagen):

@@ -13,6 +13,9 @@ class LaserSensor:
 
     def exit_video(self):
         self.imagen.ban_stopvideo = True
+
+    def isOpen(self):
+        return self.cap.isOpened()
                
         
             

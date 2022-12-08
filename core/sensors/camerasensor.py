@@ -13,3 +13,9 @@ class CameraSensor:
 
     def exit_video(self):
         self.imagen.ban_stopvideo = True
+
+    def isOpen(self):
+        return self.cap.isOpened()
+
+    def capture(self):
+        self.imagen.cargar()

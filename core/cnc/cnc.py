@@ -18,6 +18,7 @@ class Cnc(Subject):
         self.pos = pos
         self.port = None
         self.alarm = False
+        self.ishome = False
         self.find_port()
 
     def attach(self, observer: Observer) -> None:
@@ -50,12 +51,21 @@ class Cnc(Subject):
         self.msg.insert("Haciendo Home")
         print("data",data)
         self.wait_idle()
+        self.ishome = True
 
     def move(self,axis,value):
-        print("mover")
         code = "$J=G21G91"+axis+str(value)+"F"+str(self.pos.F)
         #code = "G10P1L20X0Y0Z0\nG1X1F100"
         print(code)
+        data = self._send(code)
+        print("data",data)
+        self.wait_idle()
+
+    def movexy(self,x,y):
+        x = str(x)
+        y = str(y)
+
+        code = "G0 X"+ x + " Y" + y
         data = self._send(code)
         print("data",data)
         self.wait_idle()
