@@ -10,14 +10,17 @@ class Imagen:
         self.display = display
         self.angle = 0
         self.centro = (0,0)
-        self.cargar()
+        #self.cargar()
 
     def cargar(self):
         ret, imagen = self.cap.read()
         if ret == True:    
             self.imagen = imagen
             self.show()
-        else: self.cap.release()
+            return True
+        else: 
+            self.cap.release()
+            return False
 
     
     def set(self, imagen):

@@ -38,6 +38,8 @@ class MainWindow:
         self.core = Core(self.camera_sensor,self.laser_sensor,self.cnc)
 
         self.topbar_frame.set_cnc(self.cnc)
+        self.topbar_frame.set_core(self.core)
+        self.runstop_frame.set_core(self.core)
         self.images_frame.set_displays(self.imagen1,self.imagen2)
         self.info_frame.set_msg(self.msg)
         self.info_frame.set_pos(self.position)

@@ -1,4 +1,5 @@
 import tkinter as tk
+from core.core import Core
 from gui.componentframe import ComponentFrame
 
 class RunStopFrame(ComponentFrame):
@@ -7,7 +8,7 @@ class RunStopFrame(ComponentFrame):
         self.parent = parent
         #self.config(width=30)
 
-        btn_run = tk.Button(self,text='RUN',font=("Verdana", 18,'bold'),width=6,bg='SeaGreen1')
+        btn_run = tk.Button(self,text='RUN',font=("Verdana", 18,'bold'),width=6,bg='SeaGreen1', command=self.run)
         btn_pause = tk.Button(self,text='PAUSE',font=("Verdana", 18,'bold'),width=6,bg='gold2')
         btn_stop = tk.Button(self,text='STOP',font=("Verdana", 18,'bold'),width=6,bg='firebrick1')
 
@@ -19,3 +20,10 @@ class RunStopFrame(ComponentFrame):
 
         self.grid_propagate(0)
         self.config(width=160,height=180,bg='gray90')
+
+    def set_core(self,core : Core):
+        self.core = core
+
+    def run(self):
+        self.core.run()
+    

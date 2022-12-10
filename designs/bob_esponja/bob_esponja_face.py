@@ -1,5 +1,5 @@
 
 
 class BobEsponjaFace:
-    def __init__(self,imagen) -> None:
-        self.imagen = imagen
+    def __init__(self) -> None:
+       print("Clase bob esponja face")
