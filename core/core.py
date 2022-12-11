@@ -28,9 +28,10 @@ class Core:
                 #Mover a cuadrante
                 self.cnc.movexy(q[0],q[1])
                 #Capturar foto
-                self.cam.capture()
+                ret = self.cam.capture()
+                if ret : img = self.cam.imagen
                 #Ejecutar disenio
-
+                obj.execute(img)
                 #Generar gcode
 
                 #Ejecutar gcode

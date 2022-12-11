@@ -16,12 +16,15 @@ class Imagen:
         ret, imagen = self.cap.read()
         if ret == True:    
             self.imagen = imagen
+            self.undistorted_image()
             self.show()
             return True
         else: 
             self.cap.release()
             return False
 
+    def set_cap(self,cap):
+        self.cap = cap
     
     def set(self, imagen):
         self.imagen = imagen
@@ -53,5 +56,21 @@ class Imagen:
     def video(self,cap):
         self.cap = cap
         self.display.after(10, self._show2)
+
+    def undistorted_image(self): 
+        #------------------------------#
+        #--- Undistort the image using the camera calibration parameters
+        h,  w = self.imagen.shape[:2]
+        #if Show_All==1: print("[INFO] H: ", h, "   w: ", w)
+        newcameramtx, roi = cv.getOptimalNewCameraMatrix(self.camera_matrix, self.camera_distortion, (w,h), 1, (w,h))
+        #if Show_All==1: print("[INFO] newcameramtx: \n",newcameramtx,"\n roi: \n ",roi)
+
+        #--- Undistort
+        undistorted_img = cv.undistort(self.imagen.copy(), self.camera_matrix, self.camera_distortion, None, newcameramtx)
+        self.imagen = undistorted_img
+
+    def set_matrix(self,matrix,distortion):
+        self.camera_matrix   = matrix
+        self.camera_distortion = distortion
     
    
