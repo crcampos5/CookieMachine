@@ -15,7 +15,8 @@ class Template:
 
     def upload(self):
         #carga un archivo segun el nombre
-        self.file = open(self.name +'.gcode')
+        ruta = "designs/bob_esponja/"
+        self.file = open(ruta + self.name +'.gcode')
         lines = self.file.readlines()
         #lee cada linea y guarda los puntos x y en un array
         for linea in lines:

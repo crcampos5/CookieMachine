@@ -19,6 +19,7 @@ class Cnc(Subject):
         self.port = None
         self.alarm = False
         self.ishome = False
+        self.isconect = False
         self.find_port()
 
     def attach(self, observer: Observer) -> None:
@@ -43,6 +44,7 @@ class Cnc(Subject):
         self.conection = serial.Serial(self.port, baudrate = 115200, timeout = 2)
         self.msg.insert("Conectado a la maquina")
         self.wait_idle()
+        self.isconect = True
         #time.sleep(0.1)
 
     def home(self):

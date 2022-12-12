@@ -16,6 +16,8 @@ class Imagen:
         ret, imagen = self.cap.read()
         if ret == True:    
             self.imagen = imagen
+            h,  w = self.imagen.shape[:2]
+            print(h,w)
             self.undistorted_image()
             self.show()
             return True

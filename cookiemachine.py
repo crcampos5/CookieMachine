@@ -36,6 +36,7 @@ class MainWindow:
         self.cnc = Cnc(self.msg,self.position)        
         self.cnc.attach(self.topbar_frame)
         self.core = Core(self.camera_sensor,self.laser_sensor,self.cnc)
+        self.core.set_msg(self.msg)
 
         self.topbar_frame.set_cnc(self.cnc)
         self.topbar_frame.set_core(self.core)

@@ -3,6 +3,7 @@ import json
 from core.cnc.cnc import Cnc
 from core.sensors.camerasensor import CameraSensor
 from core.sensors.lasersensor import LaserSensor
+from models.message import Message
 
 class Core:
     def __init__(self,cam : CameraSensor,laser : LaserSensor,cnc : Cnc) -> None:
@@ -29,18 +30,32 @@ class Core:
                 self.cnc.movexy(q[0],q[1])
                 #Capturar foto
                 ret = self.cam.capture()
-                if ret : img = self.cam.imagen
+                if ret : 
+                    img = self.cam.imagen
                 #Ejecutar disenio
-                obj.execute(img)
+                    obj.execute(img)
                 #Generar gcode
 
                 #Ejecutar gcode
+                else : self.msg.insert("No se pudo capturar la imagen")
 
     def _check(self):
-        if self.file != None: return True
+        if self.cnc.isconect :
+            if self.file != None:
+                if self.cnc.ishome: 
+                    return True
+                else: 
+                    self.msg.insert("La maquina no esta es home")                
+                    return False    
+            else: 
+                self.msg.insert("No hay archivo seleccionado")
+                return False
         else: 
-            print("No hay archivo seleccionado")
+            self.msg.insert("La maquina no esta conectada")
             return False
         #Verificar camaras abiertas
         #Verificar Home
+
+    def set_msg(self, msg: Message):
+        self.msg = msg
         
