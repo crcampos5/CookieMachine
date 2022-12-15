@@ -28,7 +28,9 @@ class Core:
             for q in self.quadrants:
                 #Mover a cuadrante
                 self.cnc.movexy(q[0],q[1])
+                self.msg.insert("Moviendo maquina a:" + str(q))
                 #Capturar foto
+                self.msg.insert("Capturando imagen")
                 ret = self.cam.capture()
                 if ret : 
                     img = self.cam.imagen

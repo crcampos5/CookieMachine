@@ -7,14 +7,15 @@ class CameraSensor:
 
     def __init__(self,imagen : Imagen) -> None:
         #resolucion 3264 x 2448
-        self.camera_matrix   = np.load('parameters/cam1/CameraMatrix.npy')
-        self.camera_distortion   = np.load('parameters/cam1/DistMatrix.npy')
+        self.camera_matrix   = np.load('parameters/cam2/CameraMatrix.npy')
+        self.camera_distortion   = np.load('parameters/cam2/DistMatrix.npy')
         self.imagen = imagen
         self.imagen.set_matrix(self.camera_matrix,self.camera_distortion)
-        self.cap = cv.VideoCapture(0,cv.CAP_DSHOW)
-        self.cap.set(3, 1600)
-        self.cap.set(4, 1200)
-        #self.cap.set(cv.CAP_PROP_AUTOFOCUS, 0)
+        self.cap = cv.VideoCapture()
+        self.cap.set(cv.CAP_PROP_FRAME_WIDTH, 3264)
+        self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, 2448)
+        self.cap.set(cv.CAP_PROP_AUTOFOCUS, 0)
+        self.cap.set(cv.CAP_PROP_FPS, 15)
         self.imagen.set_cap(self.cap)
         self.exitcap = False
 
@@ -30,8 +31,22 @@ class CameraSensor:
         return self.cap.isOpened()
 
     def capture(self):
+        self.opencap()
         ret = self.imagen.cargar()
-        if ret : return True
-        else: False
+        if ret : 
+            self.closecap() 
+            return True
+        else: 
+            self.closecap()
+            return False
 
+    def opencap(self):
+        self.cap.open(0)
+        self.cap.set(cv.CAP_PROP_FRAME_WIDTH, 1900)
+        self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, 1080)
+        self.cap.set(cv.CAP_PROP_AUTOFOCUS, 0)
+        self.cap.set(cv.CAP_PROP_FPS, 15)
+
+    def closecap(self):
+        self.cap.release()
     

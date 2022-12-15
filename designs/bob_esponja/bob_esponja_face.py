@@ -28,7 +28,7 @@ class BobEsponjaFace:
         print("No contornos: ", len(cnts))
         for c in cnts:
             area = cv.contourArea(c)
-            if area > 3700 and area < 2000000:
+            if area > 7000 and area < 2000000:
                 print("area: ", area)
                     
                 rect = cv.minAreaRect(c)

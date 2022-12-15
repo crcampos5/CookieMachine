@@ -13,17 +13,21 @@ class Imagen:
         #self.cargar()
 
     def cargar(self):
-        ret, imagen = self.cap.read()
-        if ret == True:    
-            self.imagen = imagen
-            h,  w = self.imagen.shape[:2]
-            print(h,w)
-            self.undistorted_image()
-            self.show()
-            return True
-        else: 
-            self.cap.release()
-            return False
+        while self.cap.isOpened():
+            print("camara abierta")
+            ret, imagen = self.cap.read()
+            if ret == True:    
+                self.imagen = imagen
+                cv.imshow("img",self.imagen)
+                h,  w = self.imagen.shape[:2]
+                print(h,w)
+                self.undistorted_image()
+                self.show()
+                return True
+            else: 
+                self.cap.release()
+                return False
+        
 
     def set_cap(self,cap):
         self.cap = cap
@@ -35,6 +39,7 @@ class Imagen:
         self.display = display
     
     def show(self):
+        
         imagen_display = cv.cvtColor(self.imagen, cv.COLOR_BGR2RGB)
         imagensmall = cv.resize(imagen_display,(500,500), interpolation=cv.INTER_CUBIC)
         imagensmall = Image.fromarray(imagensmall)
