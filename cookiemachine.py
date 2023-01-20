@@ -30,6 +30,8 @@ class MainWindow:
         self.imagen2 = Imagen()
         self.camera_sensor = CameraSensor(self.imagen1)
         self.laser_sensor = LaserSensor(self.imagen2)
+        self.laser_sensor.start()
+        self.camera_sensor.start()
         
         self.msg = Message()
         self.position = Position(self.root)

@@ -1,10 +1,17 @@
 import cv2 as cv
+import threading
 
-class LaserSensor:
-    def __init__(self,imagen) -> None:
-        self.imagen = imagen
-        self.cap = None #cv.VideoCapture()
+class LaserSensor(threading.Thread):
+    def __init__(self,imagen):
+        threading.Thread.__init__(self)
+        self.imagen = imagen    
+        #self.cap = None #cv.VideoCapture(1)
         self.exitcap = False
+
+    def run(self):
+        self.cap = cv.VideoCapture(1)
+        print("Resolution w: ",self.cap.get(cv.CAP_PROP_FRAME_WIDTH))
+        print("Resolution h: ",self.cap.get(cv.CAP_PROP_FRAME_HEIGHT))
 
     def video(self):
         print('video laser')
@@ -23,7 +30,7 @@ class LaserSensor:
     def closecap(self):
         self.cap.release()
     
-               
+
         
             
         
