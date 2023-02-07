@@ -23,13 +23,13 @@ class CameraSensor(threading.Thread):
 
     def run(self):
         self.cap = cv.VideoCapture(0)
-        #self.cap.set(cv.CAP_PROP_FRAME_WIDTH, 3264)
-        #self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, 2448)
+        self.cap.set(cv.CAP_PROP_FRAME_WIDTH, 640)
+        self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
         print("Resolution W: ",self.cap.get(cv.CAP_PROP_FRAME_WIDTH))
         print("Resolution H: ",self.cap.get(cv.CAP_PROP_FRAME_HEIGHT))
         #self.cap.set(cv.CAP_PROP_AUTOFOCUS, 0)
         #self.cap.set(cv.CAP_PROP_FPS, 15)
-        #self.imagen.set_cap(self.cap)
+        self.imagen.set_cap(self.cap)
 
     def video(self):
         print('video camera')
@@ -43,7 +43,7 @@ class CameraSensor(threading.Thread):
         return self.cap.isOpened()
 
     def capture(self):
-        self.opencap()
+        #self.opencap()
         ret = self.imagen.cargar()
         if ret : 
             self.closecap() 

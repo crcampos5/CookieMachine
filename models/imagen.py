@@ -1,6 +1,7 @@
 from PIL import Image, ImageTk
 import numpy as np
 import cv2 as cv
+import time
 
 class Imagen:
 
@@ -13,12 +14,13 @@ class Imagen:
         #self.cargar()
 
     def cargar(self):
-        while self.cap.isOpened():
+       # while self.cap.isOpened():
             print("camara abierta")
+            #time.sleep(1)
             ret, imagen = self.cap.read()
             if ret == True:    
                 self.imagen = imagen
-                cv.imshow("img",self.imagen)
+                #cv.imshow("img",self.imagen)
                 h,  w = self.imagen.shape[:2]
                 print(h,w)
                 self.undistorted_image()

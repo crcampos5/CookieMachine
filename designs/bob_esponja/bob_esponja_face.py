@@ -24,6 +24,7 @@ class BobEsponjaFace:
         cnts,_ = cv.findContours(image, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         #self.imagen.set(image)
        # self.imagen.show()
+        cv.imshow("img",image)
         #img = self.imagen.get()
         print("No contornos: ", len(cnts))
         for c in cnts:
