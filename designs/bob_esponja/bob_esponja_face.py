@@ -7,7 +7,8 @@ from models.imagen import Imagen
 
 class BobEsponjaFace:
     def __init__(self) -> None:
-       print("Clase bob esponja face")
+        self.name = "bob_esponja_face"
+        print("Clase bob esponja face")
 
 
     def execute(self,imagen : Imagen):
@@ -16,15 +17,15 @@ class BobEsponjaFace:
         #se convierte la imagen en hsv
         imageHSV = cv.cvtColor(img, cv.COLOR_BGR2HSV)
         #se crea los rangos de altos y bajos 
-        color_bajos = np.array([0, 0, 0], np.uint8)
-        color_altos = np.array([74, 255, 255], np.uint8)
+        color_bajos = np.array([0, 131, 0], np.uint8)
+        color_altos = np.array([42, 255, 255], np.uint8)
         #la imagen queda convertida a binaria segun los rangos anteriores
         image = cv.inRange(imageHSV, color_bajos, color_altos)
         #se extrae los contornos de la imagen 
         cnts,_ = cv.findContours(image, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         #self.imagen.set(image)
        # self.imagen.show()
-        cv.imshow("img",image)
+        #cv.imshow("img",image)
         #img = self.imagen.get()
         print("No contornos: ", len(cnts))
         for c in cnts:
@@ -38,9 +39,9 @@ class BobEsponjaFace:
                 #se aproxima los contornos a un poligono
                 epsilon = 0.1*cv.arcLength(c,True)
                 approx = cv.approxPolyDP(c,epsilon,True)
-                cv.drawContours(img, [approx], 0, (0,0,255),10)
+                cv.drawContours(img, [approx], 0, (0,0,255),2)
                 self.imagen.set(img)
-                self.imagen.show()
+                #self.imagen.show()
                 #determinamos las lineas transversales del poligono 
                 if approx.shape[0] == 4:   
                     x0,y0 = approx[0][0]
@@ -75,5 +76,8 @@ class BobEsponjaFace:
                     #cv.circle(img, (int(x),int(y)), 5, 255, 5)
                         #self.imagen.set(img)
                     #self.imagen.show()
-                    self.template = Template('bob_esponja_face')
+                    #self.template = Template('bob_esponja_face')
+
+        
         #self.template.draw_template(self.imagen)
+        #self.imagen.show()

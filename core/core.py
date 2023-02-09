@@ -4,6 +4,7 @@ from core.cnc.cnc import Cnc
 from core.sensors.camerasensor import CameraSensor
 from core.sensors.lasersensor import LaserSensor
 from models.message import Message
+from core.template import Template
 
 class Core:
     def __init__(self,cam : CameraSensor,laser : LaserSensor,cnc : Cnc) -> None:
@@ -25,6 +26,7 @@ class Core:
             classes = [elem for elem in elements if isinstance(getattr(selected_module, elem), type)]
             klass = getattr(selected_module, classes[0])
             obj = klass()
+            self.template = Template(obj.name)
             for q in self.quadrants:
                 #Mover a cuadrante
                 self.cnc.movexy(q[0],q[1])
@@ -37,7 +39,7 @@ class Core:
                 #Ejecutar disenio
                     obj.execute(img)
                 #Generar gcode
-
+                    self.template.set_imagen(img)
                 #Ejecutar gcode
                 else : self.msg.insert("No se pudo capturar la imagen")
 

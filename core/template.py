@@ -2,6 +2,8 @@ import math
 import numpy as np
 import cv2 as cv
 
+from models.imagen import Imagen
+
 class Template:
 
     def __init__(self,name, centro = None, ratio = None) -> None:
@@ -11,6 +13,7 @@ class Template:
         self.puntos = []
         self.upload()
         self.offset_angle = -35
+        self.valormm = 3.2
 
 
     def upload(self):
@@ -66,14 +69,17 @@ class Template:
         x,y = img.centro
         angle = img.angle
         print(x,y)
-        p = self.move(self.puntos,(x/13.35,y/13.35),angle)
-        self.puntos = self.convert_mm2pixel(p,13.35)
+        p = self.move(self.puntos,(x/self.valormm,y/self.valormm),angle)
+        self.puntos = self.convert_mm2pixel(p,self.valormm)
 
         #img = np.zeros((2000,1735,3), np.uint8)
 
         pts = np.array(self.puntos, np.int32)
         #pts = pts.reshape((-1,1,2))
-        cv.polylines(img.imagen,[pts],True,(0,255,0),10)
+        cv.polylines(img.imagen,[pts],True,(0,255,0),2)
         #cv.imshow('template',img)
-        cv.imwrite(self.name + '_template.jpg',img.imagen)
+        #cv.imwrite(self.name + '_template.jpg',img.imagen)
+
+    def set_imagen(self, img : Imagen):
+        self.imagen = img
   
