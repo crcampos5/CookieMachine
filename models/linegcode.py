@@ -2,35 +2,28 @@
 
 class LineGcode:
 
-    def __init__(self) -> None:
-        self.g = ""
-        self.x = 0
-        self.y = 0
-        self.z = 0
-        self.f = 0
-        self.s = ""
-        self.m = ""
+    def __init__(self,line) -> None:
+        self.set_string(line)
 
     def set_string(self,line):
-        g = line.find('G')
-        x = line.find('X')
-        y = line.find('Y')
-        z = line.find('Z')
-        f = line.find('F')
+        letters = ["G","X","Y","Z","F"]
+        self.segmentos = {}
+        for i in letters:
+            print(line)
+            l = line.find(i)
+            if l >= 0:
+                s = line.split(i)[1]
+                a = 0
+                for j in letters:
+                    p = s.find(j)
+                    if p >= 0:
+                        a += 1
+                        self.segmentos[i] =  float(s[0:p])
+                        line = s
+                        break
+                if a == 0 : self.segmentos[i] =  float(s)
 
-        if g :
-            if x and y and z and f:
-                self.x = line[x+1:y]
-                self.y = line[y+1:z]
-                self.z = line[z+1:f]
-                self.f = line[f+1:len(line)]
-            if x and y and z:
-                self.x = line[x+1:y]
-                self.y = line[y+1:z]
-                self.z = line[z+1:len(line)]
-            if x and y:
-                self.x = line[x+1:y]
-                self.y = line[y+1:len(line)]
+        print(self.segmentos)
                 
 
 
