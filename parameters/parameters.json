@@ -3,6 +3,7 @@
         "quadrants" : [
             [-950.000,-245.000]
             
-        ]
+        ],
+        "laser_distance_inyector" : [0,100]
     }
 }

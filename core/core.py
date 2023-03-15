@@ -16,6 +16,7 @@ class Core:
         with open('parameters/parameters.json', 'r') as f:
             self.parameters = json.load(f)
             self.quadrants = self.parameters["parameters"]["quadrants"]
+            self.laser_distance_inyector =self.parameters["parameters"]["laser_distance_inyector"]
             print(self.quadrants)
         
     def run(self):
@@ -40,7 +41,10 @@ class Core:
                     obj.execute(img)
                 #Generar gcode
                     self.template.set_imagen(img)
+                    gcode = self.template.generate_gcode(q)
                 #Ejecutar gcode
+                    self.cnc.ejecutar_gcode(gcode)
+
                 else : self.msg.insert("No se pudo capturar la imagen")
 
     def _check(self):

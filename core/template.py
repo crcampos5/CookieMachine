@@ -3,6 +3,7 @@ import numpy as np
 import cv2 as cv
 
 from models.imagen import Imagen
+from models.linegcode import LineGcode
 
 class Template:
 
@@ -11,7 +12,9 @@ class Template:
         self.centro = centro
         self.ratio = ratio
         self.puntos = []
+        self.base_gcode = []
         self.upload()
+        self.generate_base()
         self.offset_angle = -35
         self.valormm = 3.2
 
@@ -38,6 +41,28 @@ class Template:
                         point = l.split('Y')
                         self.puntos.append((float(point[0]),float(point[1])))
         self.file.close()
+
+    def generate_base(self):
+        lines = self.file.readlines()
+        for line in lines:
+            self.base_gcode.append(LineGcode(line))
+
+    #Genera el gcode incluyendo la posicion del 
+    #cuadrante, coje cada linea y la mueve 
+
+    def generate_gcode(self,quadrant):
+        x,y = self.imagen.centro
+        angle = self.imagen.angle
+        x = x/self.valormm + quadrant[0]
+        y = y/self.valormm + quadrant[1]
+
+        cookie_gcode = self.base_gcode.copy()
+
+        for line in cookie_gcode:
+            line.move([x,y],angle)
+
+        return cookie_gcode
+        
 
     def move(self, points : list, position,angle):
         #esta funcion recibe una lista de puntos 

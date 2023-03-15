@@ -85,7 +85,14 @@ class Cnc(Subject):
             state = self._send("?")
             print('[INFO] State: ', state)
             sigo = self.process_out(state)
-            
+    
+    #Esta funcion ejecuta el gcode que se le envie 
+    def ejecutar_gcode(self,gcode):
+
+        for line in gcode:
+            code = line.get_string()
+            print(code)
+            #self._send(code)
 
     def _send(self,code):
         str_send = (code +"\n").encode()
