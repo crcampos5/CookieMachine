@@ -23,30 +23,30 @@ class Template:
         #carga un archivo segun el nombre
         ruta = "designs/bob_esponja/"
         self.file = open(ruta + self.name +'.gcode')
-        lines = self.file.readlines()
+        #lines = self.file.readlines()
         #lee cada linea y guarda los puntos x y en un array
-        for linea in lines:
-            if 'G0' in linea or 'G1' in linea:
-                if 'X' in linea:
-                    l = linea.split('X')[1]
-                    if 'Z' in l:
-                        l = l.split('Z')
-                        point = l[0].split('Y')
-                        self.puntos.append((float(point[0]),float(point[1])))
-                    elif 'F' in l:
-                        l = l.split('F')
-                        point = l[0].split('Y')
-                        self.puntos.append((float(point[0]),float(point[1])))
-                    else :
-                        point = l.split('Y')
-                        self.puntos.append((float(point[0]),float(point[1])))
-        self.file.close()
+        #for linea in lines:
+        #    if 'G0' in linea or 'G1' in linea:
+        #        if 'X' in linea:
+        #            l = linea.split('X')[1]
+        #            if 'Z' in l:
+        #                l = l.split('Z')
+        #                point = l[0].split('Y')
+        #                self.puntos.append((float(point[0]),float(point[1])))
+        #            elif 'F' in l:
+        #                l = l.split('F')
+        #                point = l[0].split('Y')
+        #                self.puntos.append((float(point[0]),float(point[1])))
+        #            else :
+        #                point = l.split('Y')
+        #                self.puntos.append((float(point[0]),float(point[1])))
+        #self.file.close()
 
     def generate_base(self):
         lines = self.file.readlines()
         for line in lines:
             self.base_gcode.append(LineGcode(line))
-
+        self.file.close()
     #Genera el gcode incluyendo la posicion del 
     #cuadrante, coje cada linea y la mueve 
 

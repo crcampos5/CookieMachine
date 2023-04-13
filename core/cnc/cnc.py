@@ -92,7 +92,9 @@ class Cnc(Subject):
         for line in gcode:
             code = line.get_string()
             print(code)
-            #self._send(code)
+            self._send(code)
+            self.wait_idle()
+
 
     def _send(self,code):
         str_send = (code +"\n").encode()

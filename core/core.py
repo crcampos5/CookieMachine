@@ -40,9 +40,11 @@ class Core:
                 #Ejecutar disenio
                     obj.execute(img)
                 #Generar gcode
+                    print("Generar gcode")
                     self.template.set_imagen(img)
                     gcode = self.template.generate_gcode(q)
                 #Ejecutar gcode
+                    print("Ejecutando gcode")
                     self.cnc.ejecutar_gcode(gcode)
 
                 else : self.msg.insert("No se pudo capturar la imagen")
