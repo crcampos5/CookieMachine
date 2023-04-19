@@ -22,24 +22,29 @@ class Cnc(Subject):
         self.isconect = False
         self.find_port()
 
+    #agrega un objeto observador a la lista de observadores
     def attach(self, observer: Observer) -> None:
         self._observers.append(observer)
 
+    #remueve un objeto observador de la lista de observadores
     def detach(self, observer: Observer) -> None:
         self._observers.remove(observer)
 
+    # itera a través de la lista de observadores _observers y llama al 
+    # método update() de cada observador, pasándole la instancia actual 
+    # de la clase Cnc como argumento
     def notify(self) -> None:
         for observer in self._observers:
             observer.update(self)
 
-
+    #busca el puerto serial disponible para la conexión
     def find_port(self):
         serial_list = serial.tools.list_ports.comports(include_links=False)
         for i in serial_list:
             self.port = i.device
             
         
-
+    #establece la conexión serial con la máquina CNC
     def connect_serial(self):
         self.conection = serial.Serial(self.port, baudrate = 115200, timeout = 2)
         self.msg.insert("Conectado a la maquina")
@@ -47,6 +52,7 @@ class Cnc(Subject):
         self.isconect = True
         #time.sleep(0.1)
 
+    #envía la señal de "home" a la máquina CNC para mover sus ejes a las coordenadas de origen    
     def home(self):
         self._send("G10 P1 L20 X0 Y0 Z0")
         code = "$H"
@@ -56,6 +62,7 @@ class Cnc(Subject):
         self.wait_idle()
         self.ishome = True
 
+    #mueve un eje de la máquina CNC a una posición específica    
     def move(self,axis,value):
         code = "$J=G21G91"+axis+str(value)+"F"+str(self.pos.F)
         #code = "G10P1L20X0Y0Z0\nG1X1F100"
@@ -64,6 +71,7 @@ class Cnc(Subject):
         print("data",data)
         self.wait_idle()
 
+    #mueve la máquina CNC a una posición en el plano X-Y
     def movexy(self,x,y):
         x = str(x)
         y = str(y)
@@ -73,12 +81,14 @@ class Cnc(Subject):
         print("data",data)
         self.wait_idle()
 
+    #desbloquea la máquina CNC en caso de que esté en estado de alarma
     def disable_alarm(self):
         self.msg.insert("Desbloqueando...")
         self._send("$X")
         self.wait_idle()
         self.msg.insert("Maquina desbloqueada")
 
+    #espera a que la máquina CNC esté en estado de reposo antes de continuar con el siguiente comando
     def wait_idle(self):
         sigo = True
         while sigo:
@@ -87,7 +97,7 @@ class Cnc(Subject):
             print('[INFO] State: ', state)
             sigo = self.process_out(state)
     
-    #Esta funcion ejecuta el gcode que se le envie 
+    #envía una lista de comandos Gcode a la máquina CNC para ser ejecutados 
     def ejecutar_gcode(self,gcode):
 
         for line in gcode:
@@ -139,6 +149,7 @@ class Cnc(Subject):
             else: return True
         else: False
 
+    # activa o desactiva el láser de la máquina CNC
     def laseronoff(self, ban: bool):
         if ban :
             self.msg.insert("Activando laser")
