@@ -48,6 +48,7 @@ class Cnc(Subject):
         #time.sleep(0.1)
 
     def home(self):
+        self._send("G10 P1 L20 X0 Y0 Z0")
         code = "$H"
         data = self._send(code)
         self.msg.insert("Haciendo Home")
@@ -92,8 +93,9 @@ class Cnc(Subject):
         for line in gcode:
             code = line.get_string()
             print(code)
-            self._send(code)
-            self.wait_idle()
+            out = self._send(code)
+            #print("OUT ", out)
+            #self.wait_idle()
 
 
     def _send(self,code):
@@ -101,7 +103,7 @@ class Cnc(Subject):
         self.conection.write(str_send)
         #time.sleep(0.001)
         data = self.conection.readline().decode('ascii')
-        self.conection.reset_input_buffer()
+        #self.conection.reset_input_buffer()
         return data
 
     def process_out(self,data):

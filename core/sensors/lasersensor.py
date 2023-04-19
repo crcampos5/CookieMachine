@@ -9,7 +9,7 @@ class LaserSensor(threading.Thread):
         self.exitcap = False
 
     def run(self):
-        self.cap = cv.VideoCapture(1)
+        self.cap = cv.VideoCapture(2)
         print("Resolution w: ",self.cap.get(cv.CAP_PROP_FRAME_WIDTH))
         print("Resolution h: ",self.cap.get(cv.CAP_PROP_FRAME_HEIGHT))
 
