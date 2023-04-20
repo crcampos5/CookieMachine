@@ -3,6 +3,7 @@ import time
 from core.observer import Observer
 from core.subject import Subject
 from typing import List
+import threading
 
 from models.message import Message
 
@@ -21,6 +22,7 @@ class Cnc(Subject):
         self.ishome = False
         self.isconect = False
         self.find_port()
+        #self.status = threading.Thread(target=self.wait_idle)
 
     #agrega un objeto observador a la lista de observadores
     def attach(self, observer: Observer) -> None:
@@ -48,24 +50,30 @@ class Cnc(Subject):
     def connect_serial(self):
         self.conection = serial.Serial(self.port, baudrate = 115200, timeout = 2)
         self.msg.insert("Conectado a la maquina")
+        self._send("G10 P1 L20 X0 Y0 Z0")
         self.wait_idle()
         self.isconect = True
         #time.sleep(0.1)
 
     #envía la señal de "home" a la máquina CNC para mover sus ejes a las coordenadas de origen    
     def home(self):
-        self._send("G10 P1 L20 X0 Y0 Z0")
+        #estado = self._send("$G")
+        print("Home")
         code = "$H"
         data = self._send(code)
         self.msg.insert("Haciendo Home")
-        print("data",data)
         self.wait_idle()
         self.ishome = True
 
     #mueve un eje de la máquina CNC a una posición específica    
     def move(self,axis,value):
+        self.wait_idle()
+        #if axis == "X" : value = self.pos.X - value 
+        #if axis == "Y" : value = self.pos.Y - value 
+        #if axis == "Z" : value = self.pos.Z - value 
         code = "$J=G21G91"+axis+str(value)+"F"+str(self.pos.F)
         #code = "G10P1L20X0Y0Z0\nG1X1F100"
+        #self._send("G10 P1 L20 X0 Y0 Z0")
         print(code)
         data = self._send(code)
         print("data",data)
@@ -75,10 +83,8 @@ class Cnc(Subject):
     def movexy(self,x,y):
         x = str(x)
         y = str(y)
-
-        code = "G0 X"+ x + " Y" + y
+        code = "G0G90 X"+ x + " Y" + y
         data = self._send(code)
-        print("data",data)
         self.wait_idle()
 
     #desbloquea la máquina CNC en caso de que esté en estado de alarma
@@ -92,20 +98,23 @@ class Cnc(Subject):
     def wait_idle(self):
         sigo = True
         while sigo:
-            time.sleep(0.3)
+            time.sleep(0.1)
             state = self._send("?")
             print('[INFO] State: ', state)
             sigo = self.process_out(state)
     
     #envía una lista de comandos Gcode a la máquina CNC para ser ejecutados 
     def ejecutar_gcode(self,gcode):
-
+        #self.status.start()
         for line in gcode:
             code = line.get_string()
             print(code)
             out = self._send(code)
             #print("OUT ", out)
             #self.wait_idle()
+            state = self._send("?")
+            print('[INFO] State: ', state)
+            sigo = self.process_out(state)
 
 
     def _send(self,code):
@@ -113,7 +122,7 @@ class Cnc(Subject):
         self.conection.write(str_send)
         #time.sleep(0.001)
         data = self.conection.readline().decode('ascii')
-        #self.conection.reset_input_buffer()
+        self.conection.reset_input_buffer()
         return data
 
     def process_out(self,data):
@@ -146,6 +155,7 @@ class Cnc(Subject):
                 if "Idle" in data:
                     return False
                 else: return True
+            #elif "ok" in data: return False
             else: return True
         else: False
 

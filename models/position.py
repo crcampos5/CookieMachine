@@ -15,9 +15,9 @@ class Position:
         self.set_pos(self.X,self.Y,self.Z)
 
     def set_pos(self,x,y,z):
-        self.X = x
-        self.Y = y
-        self.Z = z
+        self.X = float(x)
+        self.Y = float(y)
+        self.Z = float(z)
         self.disx.config(text = str(x))
         self.disy.config(text = str(y))
         self.disz.config(text = str(z))

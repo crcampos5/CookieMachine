@@ -4,6 +4,10 @@
             [-950.000,-245.000]
             
         ],
-        "laser_distance_inyector" : [0,100]
+        "laser_distance_inyector" : [0,100],
+        "laser_to_camera_distance" : [10,0],
+        "valor_pixel_to_mm" : 3.2,
+        "laser_number" : 2,
+        "camera_number": 1
     }
 }
