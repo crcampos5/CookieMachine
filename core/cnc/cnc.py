@@ -48,11 +48,14 @@ class Cnc(Subject):
         
     #establece la conexión serial con la máquina CNC
     def connect_serial(self):
-        self.conection = serial.Serial(self.port, baudrate = 115200, timeout = 2)
-        self.msg.insert("Conectado a la maquina")
-        self._send("G10 P1 L20 X0 Y0 Z0")
-        self.wait_idle()
-        self.isconect = True
+        if self.isconect == False :
+            self.conection = serial.Serial(self.port, baudrate = 115200, timeout = 2)
+            self.msg.insert("Conectado a la maquina")
+            self._send("G10 P1 L20 X0 Y0 Z0")
+            self.wait_idle()
+            self.isconect = True
+        else :
+            self.conection.close()
         #time.sleep(0.1)
 
     #envía la señal de "home" a la máquina CNC para mover sus ejes a las coordenadas de origen    
@@ -68,9 +71,6 @@ class Cnc(Subject):
     #mueve un eje de la máquina CNC a una posición específica    
     def move(self,axis,value):
         self.wait_idle()
-        #if axis == "X" : value = self.pos.X - value 
-        #if axis == "Y" : value = self.pos.Y - value 
-        #if axis == "Z" : value = self.pos.Z - value 
         code = "$J=G21G91"+axis+str(value)+"F"+str(self.pos.F)
         #code = "G10P1L20X0Y0Z0\nG1X1F100"
         #self._send("G10 P1 L20 X0 Y0 Z0")
@@ -106,15 +106,21 @@ class Cnc(Subject):
     #envía una lista de comandos Gcode a la máquina CNC para ser ejecutados 
     def ejecutar_gcode(self,gcode):
         #self.status.start()
+        number_line = 0
         for line in gcode:
+            number_line += 1
             code = line.get_string()
             print(code)
             out = self._send(code)
-            #print("OUT ", out)
-            #self.wait_idle()
-            state = self._send("?")
-            print('[INFO] State: ', state)
-            sigo = self.process_out(state)
+            if out != "ok":
+                self.msg.insert(out)
+                self.notify()
+                break
+            if number_line % 10 == 0:
+                state = self._send("?")
+                print('[INFO] State: ', state)
+                sigo = self.process_out(state)
+           
 
 
     def _send(self,code):
@@ -142,16 +148,7 @@ class Cnc(Subject):
                 b = data.find("F") - 1
                 x,y,z = data[a:b].split(',')
                 self.pos.set_pos(x,y,z)        
-                #print(x,y,z)     
-                #for item in a:
-                #    if "Mpos" in item:
-                #        b = item.split(":")[1]
-                #        x,y,z = b.split(',')
-                #        self.pos.set_pos(x,y,z)
-                #        print(x,y,z)
-                #        break
-                #a = data.split("|")[1].split(":")[1]
-                
+                                
                 if "Idle" in data:
                     return False
                 else: return True
