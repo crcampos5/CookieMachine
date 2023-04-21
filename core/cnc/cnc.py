@@ -100,7 +100,7 @@ class Cnc(Subject):
         while sigo:
             time.sleep(0.1)
             state = self._send("?")
-            print('[INFO] State: ', state)
+            #print('[INFO] State: ', state)
             sigo = self.process_out(state)
     
     #envía una lista de comandos Gcode a la máquina CNC para ser ejecutados 
@@ -132,7 +132,8 @@ class Cnc(Subject):
         return data
 
     def process_out(self,data):
-        if(len(data)>1):
+        if len(data)>1  and "<" in data:
+            print('[INFO] State: ', data)
             if "Alarm" in  data:
                 a = data.find('WCO')
                 if(a != -1):

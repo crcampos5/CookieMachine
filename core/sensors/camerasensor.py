@@ -61,4 +61,12 @@ class CameraSensor(threading.Thread):
 
     def closecap(self):
         self.cap.release()
+
+    def search_quadrant(self):
+        print("search quadrant")
+        self.imagen.activate_quadrant()
+
+    def exit_quadrant(self):
+        print("exit quadrant")
+
     

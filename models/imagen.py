@@ -66,6 +66,20 @@ class Imagen:
         self.cap = cap
         self.display.after(10, self._show2)
 
+    def activate_quadrant(self):
+        if (self.cap.isOpened()):
+            ret, imagen = self.cap.read()
+            if ret == True:
+                
+                self.imagen = imagen
+                cv.rectangle(self.imagen,(315,235),(325,245),(0,255,0),-1)
+                cv.rectangle(self.imagen,(83,35),(557,445),(0,255,0),1)
+                self.show()
+                self.display.after(10, self.activate_quadrant)
+            else: self.cap.release()
+        else: print('camera is close')
+
+
     def undistorted_image(self): 
         #------------------------------#
         #--- Undistort the image using the camera calibration parameters
