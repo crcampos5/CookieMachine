@@ -56,7 +56,7 @@ class Core:
                     gcode = self.template.generate_gcode(q)
                 #Ejecuta el código G generado en la CNC
                     print("Ejecutando gcode")
-                    self.cnc.ejecutar_gcode(gcode)
+                    #self.cnc.ejecutar_gcode(gcode)
 
                 else : self.msg.insert("No se pudo capturar la imagen")
 

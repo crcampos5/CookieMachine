@@ -61,9 +61,9 @@ class Cnc(Subject):
     #envía la señal de "home" a la máquina CNC para mover sus ejes a las coordenadas de origen    
     def home(self):
         #estado = self._send("$G")
-        print("Home")
         code = "$H"
         data = self._send(code)
+        print("Home: ", data)
         self.msg.insert("Haciendo Home")
         self.wait_idle()
         self.ishome = True
@@ -107,12 +107,14 @@ class Cnc(Subject):
     def ejecutar_gcode(self,gcode):
         #self.status.start()
         number_line = 0
+        if len(gcode) == 0:
+            print("No hay lineas a ejecutar")
         for line in gcode:
             number_line += 1
             code = line.get_string()
             print(code)
             out = self._send(code)
-            if out != "ok":
+            if out == "ALARM":
                 self.msg.insert(out)
                 self.notify()
                 break
@@ -132,7 +134,7 @@ class Cnc(Subject):
         return data
 
     def process_out(self,data):
-        if len(data)>1  and "<" in data:
+        if len(data)>1 : #  and "<" in data:
             print('[INFO] State: ', data)
             if "Alarm" in  data:
                 a = data.find('WCO')

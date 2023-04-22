@@ -14,6 +14,7 @@ class Template:
         self.puntos = []
         self.base_gcode = []
         self.upload()
+        self.extract_points()
         self.generate_base()
         self.offset_angle = -35
         self.valormm = 3.2
@@ -23,34 +24,39 @@ class Template:
         #carga un archivo segun el nombre
         ruta = "designs/bob_esponja/"
         self.file = open(ruta + self.name +'.gcode')
-        #lines = self.file.readlines()
+        self.lines = self.file.readlines()
+        
+
+    def extract_points(self):
+        lines = self.lines.copy()
         #lee cada linea y guarda los puntos x y en un array
-        #for linea in lines:
-        #    if 'G0' in linea or 'G1' in linea:
-        #        if 'X' in linea:
-        #            l = linea.split('X')[1]
-        #            if 'Z' in l:
-        #                l = l.split('Z')
-        #                point = l[0].split('Y')
-        #                self.puntos.append((float(point[0]),float(point[1])))
-        #            elif 'F' in l:
-        #                l = l.split('F')
-        #                point = l[0].split('Y')
-        #                self.puntos.append((float(point[0]),float(point[1])))
-        #            else :
-        #                point = l.split('Y')
-        #                self.puntos.append((float(point[0]),float(point[1])))
+        for linea in lines:
+            if 'G0' in linea or 'G1' in linea:
+                if 'X' in linea:
+                    l = linea.split('X')[1]
+                    if 'Z' in l:
+                        l = l.split('Z')
+                        point = l[0].split('Y')
+                        self.puntos.append((float(point[0]),float(point[1])))
+                    elif 'F' in l:
+                        l = l.split('F')
+                        point = l[0].split('Y')
+                        self.puntos.append((float(point[0]),float(point[1])))
+                    else :
+                        point = l.split('Y')
+                        self.puntos.append((float(point[0]),float(point[1])))
         #self.file.close()
 
     def generate_base(self):
-        lines = self.file.readlines()
-        for line in lines:
+        #lines = self.file.readlines()
+        for line in self.lines:
             self.base_gcode.append(LineGcode(line))
         self.file.close()
     #Genera el gcode incluyendo la posicion del 
     #cuadrante, coje cada linea y la mueve 
 
     def generate_gcode(self,quadrant):
+        self.draw_template()
         x,y = self.imagen.centro
         angle = self.imagen.angle
         x = x/self.valormm + quadrant[0]
@@ -90,18 +96,21 @@ class Template:
             l.append([x,y])
         return l
 
-    def draw_template(self,img):
-        x,y = img.centro
-        angle = img.angle
-        print(x,y)
-        p = self.move(self.puntos,(x/self.valormm,y/self.valormm),angle)
+    def draw_template(self):
+        x,y = self.imagen.centro
+        angle = self.imagen.angle
+        #self.puntos = self.base_gcode.copy()
+        x1 = x/self.valormm
+        y1 = y/self.valormm
+        p = self.move(self.puntos,(x1,y1),angle)
         self.puntos = self.convert_mm2pixel(p,self.valormm)
 
         #img = np.zeros((2000,1735,3), np.uint8)
 
         pts = np.array(self.puntos, np.int32)
         #pts = pts.reshape((-1,1,2))
-        cv.polylines(img.imagen,[pts],True,(0,255,0),2)
+        cv.polylines(self.imagen.imagen,[pts],True,(0,255,0),2)
+        self.imagen.show()
         #cv.imshow('template',img)
         #cv.imwrite(self.name + '_template.jpg',img.imagen)
 

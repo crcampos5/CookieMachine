@@ -72,7 +72,7 @@ class Imagen:
             if ret == True:
                 
                 self.imagen = imagen
-                cv.rectangle(self.imagen,(315,235),(325,245),(0,255,0),-1)
+                cv.rectangle(self.imagen,(318,238),(322,242),(0,255,0),-1)
                 cv.rectangle(self.imagen,(83,35),(557,445),(0,255,0),1)
                 self.show()
                 self.display.after(10, self.activate_quadrant)
