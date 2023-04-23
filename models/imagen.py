@@ -71,9 +71,9 @@ class Imagen:
             ret, imagen = self.cap.read()
             if ret == True:
                 
-                self.imagen = imagen
-                cv.rectangle(self.imagen,(318,238),(322,242),(0,255,0),-1)
-                cv.rectangle(self.imagen,(83,35),(557,445),(0,255,0),1)
+                self.imagen = imagen  #Falta distorcion
+                cv.rectangle(self.imagen,(318,238),(322,242),(0,255,0),-1) # punto en centro 
+                cv.rectangle(self.imagen,(83,35),(557,445),(0,255,0),1) # cuadrado grande
                 self.show()
                 self.display.after(10, self.activate_quadrant)
             else: self.cap.release()
