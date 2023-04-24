@@ -13,11 +13,14 @@ class LaserFrame(ComponentFrame):
         self.check_laser = tk.IntVar()
         self.check_laser.set(0)
         self.activ_laser = False
+        self.check_measure = tk.IntVar()
+        self.check_measure.set(0)
 
         self.img_on = ImageTk.PhotoImage(file= 'asset/on.png')
         self.img_off = ImageTk.PhotoImage(file= 'asset/off.png')
 
         self.cbx_show = tk.Checkbutton(self, text="Show Laser",bg='gray90',command=self.show_laser,variable=self.check_laser)
+        self.cbx_measure = tk.Checkbutton(self, text="Measure Height",bg='gray90',command=self.measure,variable=self.check_measure)
 
         self.btn_laser = tk.Button(self,text=' LASER',font=("Verdana", 12,'bold'),width=110,image=self.img_off,compound = tk.LEFT, anchor=tk.W ,command=self.activate_laser)
         self.btn_laser.image = self.img_off
@@ -25,8 +28,9 @@ class LaserFrame(ComponentFrame):
         btn_capture.image = self.img_off
 
         self.cbx_show.grid(row=0,column=0,padx=5,pady=10)
-        self.btn_laser.grid(row=1,column=0)
-        btn_capture.grid(row=2,column=0,padx=5)
+        self.cbx_measure.grid(row=1,column=0,padx=5)
+        self.btn_laser.grid(row=2,column=0)
+        btn_capture.grid(row=3,column=0,padx=5)
 
        
 
@@ -35,6 +39,7 @@ class LaserFrame(ComponentFrame):
     
     def set_cnc(self, cnc: Cnc):
         self.cnc = cnc
+        self.laser_sensor.set_cnc(cnc)
 
     def set_laser_sensor(self, lsr: LaserSensor):
         self.laser_sensor = lsr
@@ -44,6 +49,10 @@ class LaserFrame(ComponentFrame):
         if self.check_laser.get() :
             self.laser_sensor.video()
         else: self.laser_sensor.exit_video()
+
+    def measure(self):
+        if self.check_measure.get() :
+            self.laser_sensor.measure_height()
     
     def activate_laser(self):
         self.activ_laser = operator.not_(self.activ_laser)
