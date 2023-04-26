@@ -15,8 +15,8 @@ from models.imagen import Imagen
 
 FOV_V = 45 #Campo de vision vertical de la camara
 RESOLUTION_H = 480 #Resolucion vertical de la camara
-FGP = FOV_V / RESOLUTION_H # Factor Grados a Pixel
-AMIN = 37.5 #Angulo minimo
+FPG = FOV_V / RESOLUTION_H # Factor Pixel a Grados
+AMIN = 43.83 #Angulo minimo
 B = 90 # Angulo del laser 
 c = 50 # Distancia de de laser a camara
 
@@ -31,9 +31,13 @@ class LaserSensor(threading.Thread):
         self.exitcap = False
         
     def run(self):
-        self.cap = cv.VideoCapture(2)
+        self.cap = cv.VideoCapture(1)
+        #self.cap.set(cv.CAP_PROP_FRAME_WIDTH,3264)
+        #self.cap.set(cv.CAP_PROP_FRAME_HEIGHT,2448)
         print("Resolution laser w: ",self.cap.get(cv.CAP_PROP_FRAME_WIDTH))
         print("Resolution laser h: ",self.cap.get(cv.CAP_PROP_FRAME_HEIGHT))
+        
+        self.cap.set(cv.CAP_PROP_BACKLIGHT,2)
         self.imagen.set_cap(self.cap)
 
     def video(self):
@@ -45,37 +49,42 @@ class LaserSensor(threading.Thread):
         self.imagen.ban_stopvideo = True
 
     def calculate_height(self,y):
-        A = FGP * y + AMIN
-        C = 180 - B - A
-       # sinc = math.sin(C)
-        #print("Agulo C: ", C)
-        #print("sin C: ", sinc)
-        a = c / math.sin(math.radians(C)) * math.sin(math.radians(A)) #Distancia desde el laser
-        print("Distance: ", a)
+        FOV_V = 44.9 #Campo de vision vertical de la camara
+        RESOLUTION_H = 480 #Resolucion vertical de la camara
+        AMIN = 44.1 #Angulo minimo
+        B = 90 # Angulo del laser 
+        c = 50 # Distancia de de laser a camara
+        
+        B_cam = (180 - FOV_V) / 2
+        c_cam = RESOLUTION_H / math.sin(math.radians(FOV_V)) * math.sin(math.radians(B_cam))
+
+        y_b = math.sqrt(y**2 + c_cam**2 - 2*y*c_cam*math.cos(math.radians(B_cam)))
+
+        y_A = math.degrees(math.asin(math.sin(math.radians(B_cam)) * y / y_b))
+
+        x = c * math.tan(math.radians(y_A + AMIN))
+
+        print("Distance: ", x)
 
     def process_image(self):
         self.cnc.laseronoff(True)
         time.sleep(1)
+        print("Exposicion: ",self.cap.get(cv.CAP_PROP_EXPOSURE))
+        acepto = self.cap.set(cv.CAP_PROP_EXPOSURE,-8)
+        print(acepto)
+        print("Exposicion: ",self.cap.get(cv.CAP_PROP_EXPOSURE))
         self.imagen.cargar()
         self.imagen.show()
+        cv.imwrite('laser.jpg',self.imagen.imagen)
         img = self.imagen.imagen
+        cv.imshow("Original",img)
         imageOut = img[0:480,213:426]
-        imageHSV = cv.cvtColor(imageOut, cv.COLOR_BGR2HSV)
-        color_bajos = np.array([0, 0, 0], np.uint8)
-        color_altos = np.array([146, 255, 255], np.uint8)
-        color_bajos2 = np.array([0, 0, 221], np.uint8)
-        color_altos2 = np.array([180, 11, 255], np.uint8)
-        color_bajos3 = np.array([124, 0, 252], np.uint8)
-        color_altos3 = np.array([180, 34, 255], np.uint8)
-        image = cv.inRange(imageHSV, color_bajos3, color_altos3)
-        image2 = cv.inRange(imageHSV, color_bajos2, color_altos2)
-        #imageinv = cv.bitwise_not(image2)
-        #im = cv.add(image2,image)
-        kernel = np.ones((3,3),np.uint8)
-        kernel2 = np.ones((4,4),np.uint8)
-        dilation = cv.dilate(image,kernel,iterations = 1)
-        #erode = cv.erode(image,kernel2,iterations = 1)
-        cnts,_ = cv.findContours(image2, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        
+        img = cv.cvtColor(imageOut, cv.COLOR_RGB2GRAY)
+        ret, image = cv.threshold(img, 70, 255, cv.THRESH_BINARY)
+
+
+        cnts,_ = cv.findContours(image, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         print("No contornos: ", len(cnts))
         area = 0
         x = 0
@@ -90,15 +99,9 @@ class LaserSensor(threading.Thread):
                 
         print('x=',x, 'y=',y)
         self.calculate_height(y)
-        #self.imagen.set(image)
-        # self.imagen.show()
-        #cv.imshow("img",image)
-        #img = self.imagen.get()
-        #print("No contornos: ", len(cnts))
-        cv.imshow("img",image2)
-        self.imagen.imagen = image2
+        cv.imshow("img",image)
+        self.imagen.imagen = image
         self.imagen.show()
-        y = 240
 
     def measure_height(self):
         print("medir")

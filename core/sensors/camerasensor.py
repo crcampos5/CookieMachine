@@ -22,7 +22,7 @@ class CameraSensor(threading.Thread):
         self.exitcap = False
 
     def run(self):
-        self.cap = cv.VideoCapture(1)
+        self.cap = cv.VideoCapture(2)
         self.cap.set(cv.CAP_PROP_FRAME_WIDTH, 640)
         self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
         print("Resolution W: ",self.cap.get(cv.CAP_PROP_FRAME_WIDTH))

@@ -163,7 +163,7 @@ class Cnc(Subject):
     def laseronoff(self, ban: bool):
         if ban :
             self.msg.insert("Activando laser")
-            data = self._send("G1 S50 F100")
+            data = self._send("G1 S10 F100")
             print(data)
             data = self._send("M3")
         else :
