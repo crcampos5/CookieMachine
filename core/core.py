@@ -49,14 +49,16 @@ class Core:
                 if ret : 
                     img = self.cam.imagen
                 #Ejecuta el método execute() de la instancia de la clase importada, pasándole la imagen capturada como argumento
-                    obj.execute(img)
-                #Genera el código G a partir de la imagen utilizando la instancia de la clase Template
-                    print("Generar gcode")
-                    self.template.set_imagen(img)
-                    gcode = self.template.generate_gcode(q)
-                #Ejecuta el código G generado en la CNC
-                    print("Ejecutando gcode")
-                    #self.cnc.ejecutar_gcode(gcode)
+                    ban , mensaje = obj.execute(img)
+                    if ban :
+                    #Genera el código G a partir de la imagen utilizando la instancia de la clase Template
+                        print("Generar gcode")
+                        self.template.set_imagen(img)
+                        gcode = self.template.generate_gcode(q)
+                    #Ejecuta el código G generado en la CNC
+                        print("Ejecutando gcode")
+                        #self.cnc.ejecutar_gcode(gcode)
+                    else : self.msg.insert(mensaje)
 
                 else : self.msg.insert("No se pudo capturar la imagen")
 
