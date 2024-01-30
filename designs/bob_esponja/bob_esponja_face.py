@@ -69,7 +69,7 @@ class BobEsponjaFace:
                         else:  angle = math.degrees(math.atan(m)) + 180
                         self.imagen.angle = angle
                         print('Angle: ',angle)
-                        #cv.line(img,(a1,b1),(a2,b2),(255,0,0),10)
+                        cv.line(img,(a1,b1),(a2,b2),(255,0,0),5)
                         #determinamos el momento del poligono para porterior mente obtener el centroide de la figura
                         m = cv.moments(approx)
                         x = m['m10']/m['m00']

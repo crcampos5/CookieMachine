@@ -42,7 +42,7 @@ class TopBarFrame(ComponentFrame,Observer):
         self.core = core
 
     def update(self, subject: Subject) -> None:
-        self.list_port = [subject.port]
+        self.list_port = subject.lista_puertos
         self.cbx_port.config(values = self.list_port)
         self.selected_port.set(self.list_port[0])
 
@@ -99,7 +99,7 @@ class TopBarFrame(ComponentFrame,Observer):
         self.activ_connection = operator.not_(self.activ_connection)
         
         if self.activ_connection :
-            self.cnc.connect_serial()
+            self.cnc.connect_serial(self.selected_port.get())
             self.btn_conect.config(image = self.img_on)
             self.btn_conect.image = self.img_on
         else:

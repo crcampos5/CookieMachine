@@ -7,7 +7,7 @@ from models.linegcode import LineGcode
 
 class Template:
 
-    def __init__(self,name, centro = None, ratio = None) -> None:
+    def __init__(self,name, centro = None, ratio = None, ) -> None:
         self.name = name
         self.centro = centro
         self.ratio = ratio
@@ -16,8 +16,8 @@ class Template:
         self.upload()
         self.extract_points()
         self.generate_base()
-        self.offset_angle = -35
-        self.valormm = 3.2
+        self.offset_angle = 35
+        self.valor_pixel_to_mm = 0
 
 
     def upload(self):
@@ -55,15 +55,20 @@ class Template:
     #Genera el gcode incluyendo la posicion del 
     #cuadrante, coje cada linea y la mueve 
 
-    def generate_gcode(self,quadrant):
+    def generate_gcode(self,quadrant, valor_pixel_to_mm):
+        self.valor_pixel_to_mm = valor_pixel_to_mm
         self.draw_template()
         x,y = self.imagen.centro
         angle = self.imagen.angle
-        x = x/self.valormm + quadrant[0]
-        y = y/self.valormm + quadrant[1]
+       
+        #x = y/self.valormm + quadrant[0]
+        #y = x/self.valormm + quadrant[1]
+
+        x = -1* x/self.valor_pixel_to_mm + quadrant[0]
+        y = -1* y/self.valor_pixel_to_mm + quadrant[1]
 
         cookie_gcode = self.base_gcode.copy()
-
+        angle = math.radians( (angle - 180 + self.offset_angle))
         for line in cookie_gcode:
             line.move([x,y],angle)
 
@@ -75,6 +80,7 @@ class Template:
         # y los traslada en el plano a la 
         # posicion y angulo asignado
         l = []
+        #angle = math.radians(-1 * (angle - 90 + self.offset_angle))
         angle = math.radians(-1 * (angle - 90 + self.offset_angle))
         for p in points:
             x,y = p
@@ -100,10 +106,10 @@ class Template:
         x,y = self.imagen.centro
         angle = self.imagen.angle
         #self.puntos = self.base_gcode.copy()
-        x1 = x/self.valormm
-        y1 = y/self.valormm
+        x1 = x/self.valor_pixel_to_mm
+        y1 = y/self.valor_pixel_to_mm
         p = self.move(self.puntos,(x1,y1),angle)
-        self.puntos = self.convert_mm2pixel(p,self.valormm)
+        self.puntos = self.convert_mm2pixel(p,self.valor_pixel_to_mm)
 
         #img = np.zeros((2000,1735,3), np.uint8)
 

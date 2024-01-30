@@ -18,12 +18,16 @@ class Core:
         self.laser = laser
         self.cnc = cnc
         self.file = None
+        self.stop_ban = False
 
         with open('parameters/parameters.json', 'r') as f:
             self.parameters = json.load(f)
             self.quadrants = self.parameters["parameters"]["quadrants"]
             self.laser_distance_inyector =self.parameters["parameters"]["laser_distance_inyector"]
+            self.resolution = self.parameters["parameters"]["resolution"]
+            self.valor_pixel_to_mm = self.parameters["parameters"]["valor_pixel_to_mm"]
             print(self.quadrants)
+            f.close()
 
     #Esta función run() se encarga de ejecutar el proceso principal de la aplicación.
     #utiliza la ruta del archivo seleccionado para importar la clase correspondiente 
@@ -32,6 +36,7 @@ class Core:
     def run(self):
         
         if self._check(): #verifica si se cumplen ciertas condiciones para poder continuar
+            self.stop_ban = False
             ruta = self.file.replace("/",".").split(".py")[0]
             selected_module = importlib.import_module(ruta)
             elements = dir(selected_module)
@@ -54,10 +59,14 @@ class Core:
                     #Genera el código G a partir de la imagen utilizando la instancia de la clase Template
                         print("Generar gcode")
                         self.template.set_imagen(img)
-                        gcode = self.template.generate_gcode(q)
+                        x = self.resolution[0]/2/self.valor_pixel_to_mm + self.laser_distance_inyector[0]
+                        y = self.resolution[1]/2/self.valor_pixel_to_mm + self.laser_distance_inyector[1]
+                        print("Xmm,Ymm: ", x, y)
+                        injection_point = [x, y ]
+                        gcode = self.template.generate_gcode(injection_point, self.valor_pixel_to_mm)
                     #Ejecuta el código G generado en la CNC
                         print("Ejecutando gcode")
-                        #self.cnc.ejecutar_gcode(gcode)
+                        self.cnc.ejecutar_gcode(gcode)
                     else : self.msg.insert(mensaje)
 
                 else : self.msg.insert("No se pudo capturar la imagen")
@@ -83,4 +92,12 @@ class Core:
 
     def set_msg(self, msg: Message):
         self.msg = msg
+
+
+    def pause(self):
+        self.cnc.pause()
+
+    def stop(self):
+        self.stop_ban = True
+        self.cnc.stop()
         

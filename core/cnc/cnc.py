@@ -18,9 +18,11 @@ class Cnc(Subject):
         self.msg = msg
         self.pos = pos
         self.port = None
+        self.lista_puertos = []
         self.alarm = False
         self.ishome = False
         self.isconect = False
+        self.stop_ban = False
         self.find_port()
         #self.status = threading.Thread(target=self.wait_idle)
 
@@ -43,11 +45,13 @@ class Cnc(Subject):
     def find_port(self):
         serial_list = serial.tools.list_ports.comports(include_links=False)
         for i in serial_list:
+            self.lista_puertos.append(i.device)
             self.port = i.device
             
         
     #establece la conexión serial con la máquina CNC
-    def connect_serial(self):
+    def connect_serial(self, port):
+        self.port = port
         if self.isconect == False :
             self.conection = serial.Serial(self.port, baudrate = 115200, timeout = 2)
             self.msg.insert("Conectado a la maquina")
@@ -110,18 +114,20 @@ class Cnc(Subject):
         if len(gcode) == 0:
             print("No hay lineas a ejecutar")
         for line in gcode:
-            number_line += 1
-            code = line.get_string()
-            print(code)
-            out = self._send(code)
-            if out == "ALARM":
-                self.msg.insert(out)
-                self.notify()
-                break
-            if number_line % 10 == 0:
-                state = self._send("?")
-                print('[INFO] State: ', state)
-                sigo = self.process_out(state)
+            if self.stop_ban == False:
+                number_line += 1
+                code = line.get_string()
+                print(code)
+                out = self._send(code)
+                if out == "ALARM":
+                    self.msg.insert(out)
+                    self.notify()
+                    break
+                if number_line % 10 == 0:
+                    state = self._send("?")
+                    print('[INFO] State: ', state)
+                    sigo = self.process_out(state)
+            else:  break
            
 
 
@@ -170,5 +176,16 @@ class Cnc(Subject):
             data = self._send("M5")
             self.msg.insert("Desactivando laser")
             print(data)
+
+    def pause(self):
+        self.msg.insert("Pausando...")
+        self._send("!")
+        self.wait_idle()
+        self.msg.insert("Maquina pausada")
+
+    def stop(self):
+        self.msg.insert("Parando...")
+        self.stop_ban = True
+        self.msg.insert("Maquina parada")
         
 

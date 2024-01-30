@@ -6,14 +6,14 @@ from models.imagen import Imagen
 
 class CameraSensor(threading.Thread):
 
-    def __init__(self,imagen : Imagen):
+    def __init__(self,imagen : Imagen, camera_number):
         threading.Thread.__init__(self)
         #resolucion 3264 x 2448
         self.camera_matrix   = np.load('parameters/cam2/CameraMatrix.npy')
         self.camera_distortion   = np.load('parameters/cam2/DistMatrix.npy')
         self.imagen = imagen
         self.imagen.set_matrix(self.camera_matrix,self.camera_distortion)
-        #self.cap = cv.VideoCapture(0)
+        self.camera_number = camera_number        #self.cap = cv.VideoCapture(0)
         #self.cap.set(cv.CAP_PROP_FRAME_WIDTH, 3264)
         #self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, 2448)
         #self.cap.set(cv.CAP_PROP_AUTOFOCUS, 0)
@@ -22,7 +22,7 @@ class CameraSensor(threading.Thread):
         self.exitcap = False
 
     def run(self):
-        self.cap = cv.VideoCapture(1)
+        self.cap = cv.VideoCapture(self.camera_number)
         self.cap.set(cv.CAP_PROP_FRAME_WIDTH, 640)
         self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
         print("Resolution W: ",self.cap.get(cv.CAP_PROP_FRAME_WIDTH))

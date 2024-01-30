@@ -35,8 +35,8 @@ class LineGcode:
             x,y = self.segmentos["X"],self.segmentos["Y"]
             x1 = x * math.cos(angle) - y * math.sin(angle)
             y1 = x * math.sin(angle) + y * math.cos(angle) 
-            self.segmentos["X"] = x1 + position[0]
-            self.segmentos["Y"] = y1 + position[1]
+            self.segmentos["X"] = y1 + position[0]
+            self.segmentos["Y"] = x1 + position[1]
 
     def get_string(self):
         g = ""

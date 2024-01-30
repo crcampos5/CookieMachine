@@ -9,8 +9,8 @@ class RunStopFrame(ComponentFrame):
         #self.config(width=30)
 
         btn_run = tk.Button(self,text='RUN',font=("Verdana", 18,'bold'),width=6,bg='SeaGreen1', command=self.run)
-        btn_pause = tk.Button(self,text='PAUSE',font=("Verdana", 18,'bold'),width=6,bg='gold2')
-        btn_stop = tk.Button(self,text='STOP',font=("Verdana", 18,'bold'),width=6,bg='firebrick1')
+        btn_pause = tk.Button(self,text='PAUSE',font=("Verdana", 18,'bold'),width=6,bg='gold2', command=self.pause)
+        btn_stop = tk.Button(self,text='STOP',font=("Verdana", 18,'bold'),width=6,bg='firebrick1', command=self.stop)
 
 
 
@@ -26,4 +26,10 @@ class RunStopFrame(ComponentFrame):
 
     def run(self):
         self.core.run()
+
+    def pause(self):
+        self.core.pause()
+
+    def stop(self):
+        self.core.stop()
     

@@ -1,3 +1,4 @@
+import json
 from distutils.log import info
 import tkinter as tk
 from turtle import bgcolor
@@ -25,11 +26,14 @@ class MainWindow:
         self.root.title('Cookie Machine')
         self.define_geometry()
         self.define_widgets()
+        self.open_parameters()
+        laser_number = self.parameters["parameters"]["laser_number"]
+        camera_number = self.parameters["parameters"]["camera_number"]
 
         self.imagen1 = Imagen()
         self.imagen2 = Imagen()
-        self.camera_sensor = CameraSensor(self.imagen1)
-        self.laser_sensor = LaserSensor(self.imagen2)
+        self.camera_sensor = CameraSensor(self.imagen1,camera_number)
+        self.laser_sensor = LaserSensor(self.imagen2,laser_number)
         self.laser_sensor.start()
         self.camera_sensor.start()
         
@@ -96,6 +100,10 @@ class MainWindow:
         self.laser_frame.grid(row=0,column=4,padx=5)
         self.camera_frame.grid(row=0,column=5)
 
+    def open_parameters(self):
+         with open('parameters/parameters.json', 'r') as f:
+            self.parameters = json.load(f)
+            f.close()
  
 app = tk.Tk()
 window = MainWindow(app)

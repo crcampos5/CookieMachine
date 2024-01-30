@@ -21,17 +21,18 @@ B = 90 # Angulo del laser
 c = 50 # Distancia de de laser a camara
 
 class LaserSensor(threading.Thread):
-    def __init__(self,imagen: Imagen):
+    def __init__(self,imagen: Imagen, laser_number):
         threading.Thread.__init__(self)
         self.camera_matrix   = np.load('parameters/cam2/CameraMatrix.npy')
         self.camera_distortion   = np.load('parameters/cam2/DistMatrix.npy')
         self.imagen = imagen    
         self.imagen.set_matrix(self.camera_matrix,self.camera_distortion)
+        self.laser_number = laser_number
         #self.cap = None #cv.VideoCapture(1)
         self.exitcap = False
         
     def run(self):
-        self.cap = cv.VideoCapture(0) 
+        self.cap = cv.VideoCapture(self.laser_number) 
         #self.cap.set(cv.CAP_PROP_FRAME_WIDTH,3264)
         #self.cap.set(cv.CAP_PROP_FRAME_HEIGHT,2448)
         print("Resolution laser w: ",self.cap.get(cv.CAP_PROP_FRAME_WIDTH))

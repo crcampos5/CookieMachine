@@ -1,14 +1,14 @@
 {
     "parameters": {
         "quadrants" : [
-            [-937.000,-264.000]
+            [-951.000,-243.000]
             
         ],
-        "laser_distance_inyector" : [0,100],
+        "laser_distance_inyector" : [-931.9,-74.7],
         "laser_to_camera_distance" : [28.3,13],
-        "valor_pixel_to_mm" : 3.16,
+        "valor_pixel_to_mm" : 3.2,
         "laser_number" : 1,
-        "camera_number": 2,
+        "camera_number": 0,
         "resolution": [640,480]
     }
 }
