@@ -30,6 +30,7 @@ class LaserSensor(threading.Thread):
         self.laser_number = laser_number
         #self.cap = None #cv.VideoCapture(1)
         self.exitcap = False
+        self.distance = 0
         
     def run(self):
         self.cap = cv.VideoCapture(self.laser_number) 
@@ -64,7 +65,7 @@ class LaserSensor(threading.Thread):
         y_A = math.degrees(math.asin(math.sin(math.radians(B_cam)) * y / y_b))
 
         x = c * math.tan(math.radians(y_A + AMIN))
-
+        self.distance = x
         print("Distance: ", x)
 
     def process_image(self):
@@ -74,18 +75,23 @@ class LaserSensor(threading.Thread):
         acepto = self.cap.set(cv.CAP_PROP_EXPOSURE,-8)
         print(acepto)
         print("Exposicion: ",self.cap.get(cv.CAP_PROP_EXPOSURE))
-        self.imagen.cargar()
+        ret = self.imagen.cargar()
+        self.cap.release()
+            
         self.imagen.show()
-        cv.imwrite('laser.jpg',self.imagen.imagen)
+        #cv.imwrite('laser.jpg',self.imagen.imagen)
         img = self.imagen.imagen
-        cv.imshow("Original",img)
+        #cv.imshow("Original",img)
         imageOut = img[0:480,213:426]
-        
-        img = cv.cvtColor(imageOut, cv.COLOR_RGB2GRAY)
-        ret, image = cv.threshold(img, 70, 255, cv.THRESH_BINARY)
+
+        red_image = self.red_technique(imageOut)
+        #cv.imshow("Tecnica de rojos",red_image)
+        #img = cv.cvtColor(imageOut, cv.COLOR_RGB2GRAY)
+        #cv.imshow("Grises",img)
+        #ret, image = cv.threshold(img, 70, 255, cv.THRESH_BINARY)
 
 
-        cnts,_ = cv.findContours(image, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        cnts,_ = cv.findContours(red_image, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         print("No contornos: ", len(cnts))
         area = 0
         x = 0
@@ -100,8 +106,8 @@ class LaserSensor(threading.Thread):
                 
         print('x=',x, 'y=',y)
         self.calculate_height(y)
-        cv.imshow("img",image)
-        self.imagen.imagen = image
+       # cv.imshow("img",red_image)
+        self.imagen.imagen = red_image
         self.imagen.show()
 
     def measure_height(self):
@@ -111,7 +117,19 @@ class LaserSensor(threading.Thread):
     def activate_laser(self):
         self.cnc.laseronoff(True)
         
-        
+    def red_technique(self,frame):
+
+        #redBajo1 = np.array([0, 100, 20], np.uint8)
+        #redAlto1 = np.array([8, 255, 255], np.uint8)
+        redBajo2=np.array([170, 100, 60], np.uint8)
+        redAlto2=np.array([179, 255, 255], np.uint8)
+
+        frameHSV = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+        #maskRed1 = cv.inRange(frameHSV, redBajo1, redAlto1)
+        maskRed2 = cv.inRange(frameHSV, redBajo2, redAlto2)
+        #maskRed = cv.add(maskRed1, maskRed2)
+
+        return maskRed2
 
 
 

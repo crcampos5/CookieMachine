@@ -48,13 +48,28 @@ class LineGcode:
             if "Y" in self.segmentos:
                 g += " Y" + str(round(self.segmentos["Y"],3))
             if "Z" in self.segmentos:
-                g += " Z" + str(self.segmentos["Z"])
+                g += " Z" + str(round(self.segmentos["Z"],3))
             if "F" in self.segmentos:
                 g += " F" + str(self.segmentos["F"])
         
         return g
-                
+    
+    def contains_z(self):
+        if "Z" in self.segmentos: return True | False
 
+    def get_z (self):
+        if "Z" in self.segmentos:
+            return self.segmentos["Z"]
+        else : return None
+
+    def set_z(self,z):
+        if "Z" in self.segmentos:
+            self.segmentos["Z"] = float(z)
+            return True
+        else : return False
+
+                
+    
 
                           
                 

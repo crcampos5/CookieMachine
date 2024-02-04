@@ -7,6 +7,7 @@
 import importlib
 import json
 from core.cnc.cnc import Cnc
+from core.scanner import Scanner
 from core.sensors.camerasensor import CameraSensor
 from core.sensors.lasersensor import LaserSensor
 from models.message import Message
@@ -44,10 +45,12 @@ class Core:
             klass = getattr(selected_module, classes[0])
             obj = klass()
             self.template = Template(obj.name)
+            self.scanner = Scanner(self.laser,self.cnc)
             for q in self.quadrants:
                 #Mueve la CNC a la posición del cuadrante actua
-                self.cnc.movexy(q[0],q[1])
-                self.msg.insert("Moviendo maquina a:" + str(q))
+                #[-951.000,-243.000]
+                self.cnc.movexy(q[0],q[1],"Camara")
+                self.msg.insert("Moviendo camara a:" + str(q))
                 #Captura una imagen utilizando la cámara
                 self.msg.insert("Capturando imagen")
                 ret = self.cam.capture()
@@ -64,9 +67,16 @@ class Core:
                         print("Xmm,Ymm: ", x, y)
                         injection_point = [x, y ]
                         gcode = self.template.generate_gcode(injection_point, self.valor_pixel_to_mm)
+                    #Ejecutando laser
+                        xcentro,ycentro = img.centro
+                        a = -1* xcentro/self.valor_pixel_to_mm + x
+                        b = -1* ycentro/self.valor_pixel_to_mm + y
+                        gcode = self.scanner.scan_centroid(gcode, [a,b])
                     #Ejecuta el código G generado en la CNC
                         print("Ejecutando gcode")
+                        self.cnc.save_gcode(gcode)
                         self.cnc.ejecutar_gcode(gcode)
+                        
                     else : self.msg.insert(mensaje)
 
                 else : self.msg.insert("No se pudo capturar la imagen")

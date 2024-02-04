@@ -24,6 +24,12 @@ class Cnc(Subject):
         self.isconect = False
         self.stop_ban = False
         self.find_port()
+        self.modes = {
+            "Boquilla" : [0 , 0],
+            "Camara": [-19.1 , -168.3],
+            "Laser" : [9.9 , -180.7]
+        }
+        self.selected_mode = self.modes["Boquilla"]
         #self.status = threading.Thread(target=self.wait_idle)
 
     #agrega un objeto observador a la lista de observadores
@@ -78,15 +84,16 @@ class Cnc(Subject):
         code = "$J=G21G91"+axis+str(value)+"F"+str(self.pos.F)
         #code = "G10P1L20X0Y0Z0\nG1X1F100"
         #self._send("G10 P1 L20 X0 Y0 Z0")
-        print(code)
+        #print(code)
         data = self._send(code)
         print("data",data)
         self.wait_idle()
 
     #mueve la máquina CNC a una posición en el plano X-Y
-    def movexy(self,x,y):
-        x = str(x)
-        y = str(y)
+    def movexy(self,x,y,mode = "Boquilla"):
+        offset_xy = self.modes[mode]
+        x = str(x + offset_xy[0])
+        y = str(y + offset_xy[1])
         code = "G0G90 X"+ x + " Y" + y
         data = self._send(code)
         self.wait_idle()
@@ -117,7 +124,7 @@ class Cnc(Subject):
             if self.stop_ban == False:
                 number_line += 1
                 code = line.get_string()
-                print(code)
+                #print(code)
                 out = self._send(code)
                 if out == "ALARM":
                     self.msg.insert(out)
@@ -125,9 +132,23 @@ class Cnc(Subject):
                     break
                 if number_line % 10 == 0:
                     state = self._send("?")
-                    print('[INFO] State: ', state)
+                    #print('[INFO] State: ', state)
                     sigo = self.process_out(state)
             else:  break
+
+    
+    def save_gcode(self,gcode):
+            #self.status.start()
+        number_line = 0
+        if len(gcode) == 0:
+            print("No hay lineas a guardar")
+        f = open ('gcode.txt','w')
+        for line in gcode:
+            number_line += 1
+            code = line.get_string()
+            f.write('\n' + code)
+
+        f.close()     
            
 
 
@@ -141,7 +162,7 @@ class Cnc(Subject):
 
     def process_out(self,data):
         if len(data)>1 : #  and "<" in data:
-            print('[INFO] State: ', data)
+            #print('[INFO] State: ', data)
             if "Alarm" in  data:
                 a = data.find('WCO')
                 if(a != -1):
@@ -169,7 +190,7 @@ class Cnc(Subject):
     def laseronoff(self, ban: bool):
         if ban :
             self.msg.insert("Activando laser")
-            data = self._send("G1 S10 F100")
+            data = self._send("G1 S100 F100")
             print(data)
             data = self._send("M3")
         else :

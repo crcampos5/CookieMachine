@@ -1,3 +1,6 @@
+# La clase Template esta diseñado para manipular y transformar archivos G-code, 
+# especialmente para trabajar con plantillas y generar nuevos G-codes a partir de ellas.
+
 import math
 import numpy as np
 import cv2 as cv
@@ -16,10 +19,10 @@ class Template:
         self.upload()
         self.extract_points()
         self.generate_base()
-        self.offset_angle = 35
+        self.offset_angle = 35 #Ángulo de compensación, inicializado en 35.
         self.valor_pixel_to_mm = 0
 
-
+    #El método upload carga un archivo según el nombre proporcionado
     def upload(self):
         #carga un archivo segun el nombre
         ruta = "designs/bob_esponja/"
@@ -68,7 +71,9 @@ class Template:
         y = -1* y/self.valor_pixel_to_mm + quadrant[1]
 
         cookie_gcode = self.base_gcode.copy()
-        angle = math.radians( (angle - 180 + self.offset_angle))
+        a = (angle - 90 + self.offset_angle) * -1
+        angle = math.radians( a )
+        print("Angulo Maquina: ", a)
         for line in cookie_gcode:
             line.move([x,y],angle)
 

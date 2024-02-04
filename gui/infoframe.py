@@ -16,6 +16,7 @@ class InfoFrame(ComponentFrame):
         img_x = ImageTk.PhotoImage(file= 'asset/xaxis.png')
         img_y = ImageTk.PhotoImage(file= 'asset/yaxis.png')
         img_z = ImageTk.PhotoImage(file= 'asset/zaxis.png')
+        img_h = ImageTk.PhotoImage(file= 'asset/haxis.png')
 
         self.btn_X  = tk.Button(self, text='X:',image=img_x,font=("Verdana", 24,'bold'),command=self.homex,width=32)
         self.btn_X.image = img_x
@@ -28,6 +29,10 @@ class InfoFrame(ComponentFrame):
         self.btn_Z  = tk.Button(self, text='Z:',image=img_z,font=("Verdana", 24,'bold'),command=self.homez,width=32)
         self.btn_Z.image = img_z
         self.lbl_Zbox  = tk.Label(self, text=str(0.0),bg='white',width=14,font=("Verdana", 18))
+
+        self.btn_H  = tk.Button(self, text='H:',image=img_h,font=("Verdana", 24,'bold'),command=self.homeh,width=32)
+        self.btn_H.image = img_h
+        self.lbl_Hbox  = tk.Label(self, text=str(0.0),bg='white',width=14,font=("Verdana", 18))
 
         self.lbl_console  = scrolledtext.ScrolledText(self,wrap = tk.WORD,bg='white',width=28,height=22)
 
@@ -42,7 +47,10 @@ class InfoFrame(ComponentFrame):
         self.btn_Z.grid(row=2,column=0,padx=2,pady=1)
         self.lbl_Zbox.grid(row=2,column=1,padx=2,pady=1)
 
-        self.lbl_console.grid(row=3,column=0,columnspan=2,padx=2,pady=2)
+        self.btn_H.grid(row=3,column=0,padx=2,pady=1)
+        self.lbl_Hbox.grid(row=3,column=1,padx=2,pady=1)
+
+        self.lbl_console.grid(row=4,column=0,columnspan=2,padx=2,pady=2)
 
     def set_pos(self, pos: Position):
         self.pos = pos
@@ -60,6 +68,9 @@ class InfoFrame(ComponentFrame):
         pass
 
     def homez(self):
+        pass
+
+    def homeh(self):
         pass
 
 
