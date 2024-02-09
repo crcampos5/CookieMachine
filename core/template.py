@@ -58,24 +58,17 @@ class Template:
     #Genera el gcode incluyendo la posicion del 
     #cuadrante, coje cada linea y la mueve 
 
-    def generate_gcode(self,quadrant, valor_pixel_to_mm):
+    def generate_gcode(self,centroide, valor_pixel_to_mm):
         self.valor_pixel_to_mm = valor_pixel_to_mm
         self.draw_template()
-        x,y = self.imagen.centro
-        angle = self.imagen.angle
-       
-        #x = y/self.valormm + quadrant[0]
-        #y = x/self.valormm + quadrant[1]
-
-        x = -1* x/self.valor_pixel_to_mm + quadrant[0]
-        y = -1* y/self.valor_pixel_to_mm + quadrant[1]
+        angle = self.imagen.angle       
 
         cookie_gcode = self.base_gcode.copy()
         a = (angle - 90 + self.offset_angle) * -1
         angle = math.radians( a )
         print("Angulo Maquina: ", a)
         for line in cookie_gcode:
-            line.move([x,y],angle)
+            line.move([centroide[0],centroide[1]],angle)
 
         return cookie_gcode
         

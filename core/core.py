@@ -29,7 +29,7 @@ class Core:
             self.valor_pixel_to_mm = self.parameters["parameters"]["valor_pixel_to_mm"]
             print(self.quadrants)
             f.close()
-
+        self.cnc.set_parameters(self.parameters["parameters"])
     #Esta función run() se encarga de ejecutar el proceso principal de la aplicación.
     #utiliza la ruta del archivo seleccionado para importar la clase correspondiente 
     #y crear una instancia de ella. Luego, crea una instancia de la clase Template, 
@@ -60,22 +60,25 @@ class Core:
                     ban , mensaje = obj.execute(img)
                     if ban :
                     #Genera el código G a partir de la imagen utilizando la instancia de la clase Template
+                        xcentro,ycentro = img.centro
                         print("Generar gcode")
                         self.template.set_imagen(img)
-                        x = self.resolution[0]/2/self.valor_pixel_to_mm + self.laser_distance_inyector[0]
-                        y = self.resolution[1]/2/self.valor_pixel_to_mm + self.laser_distance_inyector[1]
+                        a = self.resolution[0]/2/self.valor_pixel_to_mm 
+                        b = self.resolution[1]/2/self.valor_pixel_to_mm 
+                        x = q[0] - b + ycentro/self.valor_pixel_to_mm
+                        y = q[1] - a + xcentro/self.valor_pixel_to_mm 
                         print("Xmm,Ymm: ", x, y)
                         injection_point = [x, y ]
                         gcode = self.template.generate_gcode(injection_point, self.valor_pixel_to_mm)
                     #Ejecutando laser
-                        xcentro,ycentro = img.centro
-                        a = -1* xcentro/self.valor_pixel_to_mm + x
-                        b = -1* ycentro/self.valor_pixel_to_mm + y
-                        gcode = self.scanner.scan_centroid(gcode, [a,b])
-                    #Ejecuta el código G generado en la CNC
-                        print("Ejecutando gcode")
-                        self.cnc.save_gcode(gcode)
-                        self.cnc.ejecutar_gcode(gcode)
+                        
+                        ret , gcode = self.scanner.scan_centroid(gcode, injection_point)
+                        if ret :
+                        #Ejecuta el código G generado en la CNC
+                            print("Ejecutando gcode")
+                            self.cnc.save_gcode(gcode)
+                            self.cnc.ejecutar_gcode2(gcode)
+                        else : self.msg.insert("No se encontro el laser")
                         
                     else : self.msg.insert(mensaje)
 

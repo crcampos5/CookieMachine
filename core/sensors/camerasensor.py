@@ -13,23 +13,26 @@ class CameraSensor(threading.Thread):
         self.camera_distortion   = np.load('parameters/cam2/DistMatrix.npy')
         self.imagen = imagen
         self.imagen.set_matrix(self.camera_matrix,self.camera_distortion)
-        self.camera_number = camera_number        #self.cap = cv.VideoCapture(0)
+        self.camera_number = camera_number        
+        self.resolution = [640 , 480] 
+        #self.cap = cv.VideoCapture(0)
         #self.cap.set(cv.CAP_PROP_FRAME_WIDTH, 3264)
         #self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, 2448)
         #self.cap.set(cv.CAP_PROP_AUTOFOCUS, 0)
         #self.cap.set(cv.CAP_PROP_FPS, 15)
         #self.imagen.set_cap(self.cap)
-        self.exitcap = False
+        self.c_captures = 0
 
     def run(self):
         self.cap = cv.VideoCapture(self.camera_number)
-        self.cap.set(cv.CAP_PROP_FRAME_WIDTH, 640)
-        self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
+        self.cap.set(cv.CAP_PROP_FRAME_WIDTH, self.resolution[0])
+        self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, self.resolution[1])
         print("Resolution W: ",self.cap.get(cv.CAP_PROP_FRAME_WIDTH))
         print("Resolution H: ",self.cap.get(cv.CAP_PROP_FRAME_HEIGHT))
         #self.cap.set(cv.CAP_PROP_AUTOFOCUS, 0)
         #self.cap.set(cv.CAP_PROP_FPS, 15)
         self.imagen.set_cap(self.cap)
+        self.imagen.set_mode("camera")
 
     def video(self):
         print('video camera')
@@ -43,21 +46,21 @@ class CameraSensor(threading.Thread):
         return self.cap.isOpened()
 
     def capture(self):
-        #self.opencap()
+        if self.isOpen() == False:
+            self.opencap()
         ret = self.imagen.cargar()
+
         if ret : 
-            self.closecap() 
-            return True
-        else: 
-            self.closecap()
-            return False
+            self.c_captures += 1
+            img = self.imagen.imagen
+            cv.imwrite("capture"+str(self.c_captures)+".jpg",img)
 
     def opencap(self):
-        self.cap.open(0)
-        self.cap.set(cv.CAP_PROP_FRAME_WIDTH, 1900)
-        self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, 1080)
-        self.cap.set(cv.CAP_PROP_AUTOFOCUS, 0)
-        self.cap.set(cv.CAP_PROP_FPS, 15)
+        self.cap.open(self.camera_number)
+        #self.cap.set(cv.CAP_PROP_FRAME_WIDTH, self.resolution[0])
+        #self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, self.resolution[1])
+        #self.cap.set(cv.CAP_PROP_AUTOFOCUS, 0)
+        #self.cap.set(cv.CAP_PROP_FPS, 15)
 
     def closecap(self):
         self.cap.release()

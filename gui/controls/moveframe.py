@@ -5,6 +5,7 @@ from gui.componentframe import ComponentFrame
 from PIL import Image, ImageTk
 import os
 import cv2 as cv
+from pynput import keyboard
 
 class MoveFrame(ComponentFrame):
     def __init__(self,parent,cnc = None) -> None:
@@ -14,6 +15,7 @@ class MoveFrame(ComponentFrame):
         self.list_und = ['10 mm','1 mm','0.1 mm']
         self.selected_und = tk.StringVar(self)
         self.selected_und.set(self.list_und[0])
+        self.solto = False
 
         img_left_move = ImageTk.PhotoImage(file= 'asset/left_move.png')
         img_bottom_move = ImageTk.PhotoImage(file= 'asset/bottom_move.png')
@@ -50,6 +52,9 @@ class MoveFrame(ComponentFrame):
 
         self.grid_propagate(0)
         self.config(width=170,height=180,bg='gray90')
+
+        escuchador = keyboard.Listener(self.pulsa)
+        escuchador.start()
     
     def set_cnc(self, cnc: Cnc):
         self.cnc = cnc
@@ -86,5 +91,25 @@ class MoveFrame(ComponentFrame):
                 break
         print(valor)
         return valor
+    
+    def pulsa(self,tecla):
+        if self.solto == False:
+            if str(tecla) == "Key.right" :
+                self.move_xplus()
+            if str(tecla) == "Key.left" :
+                self.move_xminus()
+            if str(tecla) == "Key.down" :
+                self.move_yminus()
+            if str(tecla) == "Key.up" :
+                self.move_yplus()
+            if str(tecla) == "Key.page_up" :
+                self.move_zplus()
+            if str(tecla) == "Key.page_down" :
+                self.move_zminus()
+        else: self.solto = True
+
+    def suelta(self,tecla):
+        self.solto = True
+        
     
     

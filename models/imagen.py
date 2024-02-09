@@ -11,7 +11,7 @@ class Imagen:
         self.display = display
         self.angle = 0
         self.centro = (0,0)
-        #self.cargar()
+        self.mode = None
 
     def cargar(self):
        # while self.cap.isOpened():
@@ -39,11 +39,18 @@ class Imagen:
     
     def set_display(self,display):
         self.display = display
+
+    def set_mode(self,mode):
+        self.mode = mode
     
     def show(self):
         
         imagen_display = cv.cvtColor(self.imagen, cv.COLOR_BGR2RGB)
-        imagensmall = cv.resize(imagen_display,(500,500), interpolation=cv.INTER_CUBIC)
+        if self.mode == "camera" : 
+            resolution = (480,640)
+            imagen_display =cv.rotate(imagen_display, cv.ROTATE_90_COUNTERCLOCKWISE)
+        else:  resolution = (213,480)
+        imagensmall = cv.resize(imagen_display,resolution, interpolation=cv.INTER_CUBIC)
         imagensmall = Image.fromarray(imagensmall)
         imagensmall = ImageTk.PhotoImage(imagensmall)
         if self.display != None :

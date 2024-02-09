@@ -14,9 +14,9 @@ class ImagesFrame(ComponentFrame):
         self.imagen2 = imagen2
         
 
-        self.lbl_imagen1 = tk.Label(self,bg='white',width=500,image=img)
+        self.lbl_imagen1 = tk.Label(self,bg='white',width=480,image=img)
         self.lbl_imagen1.image = img
-        self.lbl_imagen2 = tk.Label(self,bg='white',width=500,image=img)
+        self.lbl_imagen2 = tk.Label(self,bg='white',width=360,image=img)
         self.lbl_imagen2.image = img
 
         #self.imagen1.set_display(lbl_imagen1)
@@ -27,7 +27,7 @@ class ImagesFrame(ComponentFrame):
 
 
         self.grid_propagate(0)
-        self.config(width=1005,height=500)
+        self.config(width=1005,height=640)
     
     def set_displays(self,img1: Imagen, img2: Imagen):
         self.imagen1 = img1

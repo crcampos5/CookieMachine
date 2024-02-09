@@ -4,6 +4,7 @@ import tkinter as tk
 from turtle import bgcolor
 from core.cnc.cnc import Cnc
 from core.core import Core
+from gui.controls.calibrateframe import CalibrateFrame
 from gui.controls.cameraframe import CameraFrame
 from gui.controls.laserframe import LaserFrame
 from gui.controls.valveframe import ValveFrame
@@ -56,13 +57,14 @@ class MainWindow:
         self.laser_frame.set_laser_sensor(self.laser_sensor)
         self.laser_frame.set_cnc(self.cnc)
         self.camera_frame.set_camera_sensor(self.camera_sensor)
+        self.calibrate_frame.set_cnc(self.cnc)
         self.cnc.notify()
 
     
 
     def define_geometry(self):
         w = 1280 # width for the Tk root
-        h = 738 # height for the Tk root
+        h = 878 # height for the Tk root
 
         # get screen width and height
         ws = self.root.winfo_screenwidth() # width of the screen
@@ -87,6 +89,7 @@ class MainWindow:
         self.valve_frame = ValveFrame(self.controls_frame)
         self.laser_frame = LaserFrame(self.controls_frame)
         self.camera_frame = CameraFrame(self.controls_frame)
+        self.calibrate_frame = CalibrateFrame(self.controls_frame)
 
 
         self.topbar_frame.grid(row=0,column=0,columnspan=2)
@@ -99,6 +102,7 @@ class MainWindow:
         self.valve_frame.grid(row=0,column=3)
         self.laser_frame.grid(row=0,column=4,padx=5)
         self.camera_frame.grid(row=0,column=5)
+        self.calibrate_frame.grid(row=0,column=6,padx=5)
 
     def open_parameters(self):
          with open('parameters/parameters.json', 'r') as f:

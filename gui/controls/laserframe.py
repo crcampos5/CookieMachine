@@ -4,6 +4,7 @@ from core.sensors.lasersensor import LaserSensor
 from gui.componentframe import ComponentFrame
 from PIL import Image, ImageTk
 import operator
+import cv2 as cv
 
 class LaserFrame(ComponentFrame):
     def __init__(self,parent,laser_sensor = None) -> None:
@@ -26,11 +27,14 @@ class LaserFrame(ComponentFrame):
         self.btn_laser.image = self.img_off
         btn_capture = tk.Button(self,text=' CAPTURE',font=("Verdana", 12,'bold'),width=110,image=self.img_off,compound = tk.LEFT,anchor=tk.W)
         btn_capture.image = self.img_off
+        btn_calibrate = tk.Button(self,text=' Escanear',font=("Verdana", 12,'bold'),width=110,image=self.img_off,compound = tk.LEFT,anchor=tk.W,command=self.calibrate)
+        btn_calibrate.image = self.img_off
 
         self.cbx_show.grid(row=0,column=0,padx=5,pady=10)
         self.cbx_measure.grid(row=1,column=0,padx=5)
         self.btn_laser.grid(row=2,column=0)
         btn_capture.grid(row=3,column=0,padx=5)
+        btn_calibrate.grid(row=5,column=0)
 
        
 
@@ -64,3 +68,11 @@ class LaserFrame(ComponentFrame):
             self.cnc.laseronoff(False)
             self.btn_laser.config(image = self.img_off)
             self.btn_laser.image = self.img_off
+    
+    def calibrate(self):
+        #self.cnc.move_to_quadrant("Laser")
+        self.laser_sensor.scan_line([-931.6,-73.2])
+
+        
+
+    

@@ -73,6 +73,8 @@ class TopBarFrame(ComponentFrame,Observer):
         self.btn_conect = tk.Button(self.wrap1,text='Conectar',command=self.connect,image=self.img_off,width=80,compound = tk.LEFT)
         self.btn_alarm = tk.Button(self.wrap1,text=' Unlock',command=self.disabled_lock,image=self.img_off,width=80,compound = tk.LEFT)
         self.btn_alarm.image = self.img_off
+        self.btn_reset = tk.Button(self.wrap1,text=' Reset',command=self.reset,image=self.img_off,width=80,compound = tk.LEFT)
+        self.btn_reset.image = self.img_off
         self.lbl_design  = tk.Label(self, text='Diseño:')
         self.cbx_design = ttk.Combobox(self,values=self.list_design,textvariable=self.selected_design)
         self.cbx_design.bind('<<ComboboxSelected>>', self.select)
@@ -81,7 +83,7 @@ class TopBarFrame(ComponentFrame,Observer):
         self.wrap1.grid(row=0,column=0,sticky=tk.E,pady=5,padx=5)
         self.btn_conect.grid(row=0,column=2,pady=2,padx=5)
         self.btn_alarm.grid(row=0,column=3)
-
+        self.btn_reset.grid(row=0,column=4)
         self.lbl_design.grid(row=0,column=1,padx=5,pady=5)
         self.cbx_design.grid(row=0,column=2,pady=5,padx=5)
 
@@ -95,13 +97,17 @@ class TopBarFrame(ComponentFrame,Observer):
         self.btn_alarm.config(image = self.img_off)
         self.btn_alarm.image = self.img_off
     
+    def reset(self):
+        self.cnc.reset()
+
     def connect(self):
         self.activ_connection = operator.not_(self.activ_connection)
         
         if self.activ_connection :
-            self.cnc.connect_serial(self.selected_port.get())
+            self.cnc.connect_serial(self.selected_port.get(), self.activ_connection)
             self.btn_conect.config(image = self.img_on)
             self.btn_conect.image = self.img_on
         else:
+            self.cnc.connect_serial(self.selected_port.get(), self.activ_connection)
             self.btn_conect.config(image = self.img_off)
             self.btn_conect.image = self.img_off

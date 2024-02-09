@@ -14,22 +14,31 @@ class Scanner:
     def scan_centroid(self, gcode, centroide ):
         print("Centroide: ", centroide )
         self.cnc.movexy(centroide[0],centroide[1],"Laser")
-        self.laser.measure_height()
+        ret = self.laser.measure_height()
         h = self.laser_cero - self.laser.distance
         print("Altura: ", h)
-        z = self.z_travel + h + 0.5
+        z = self.z_travel + h + 1
         print("Altura de z: ",z)
-
-        self._process_gcode(z,gcode)
-        return gcode
+        print (ret)
+        if ret :
+            self._process_gcode(z,gcode)
+        return ret , gcode
+        
 
         
 
     def scan_points(self):
         pass
 
-    def scan_line(self):
-        pass
+    def scan_line(self, starting_position,distance = 100):
+        x = starting_position[0]
+        y = starting_position[1]
+        self.cnc.movexy(x,y,"Laser")
+        for i in range(distance):
+            self.cnc.movexy((x+i),y,"Laser")
+            ret = self.laser.measure_height()
+            print(self.laser.distance)
+
 
     def _process_gcode(self,altura,gcode):
         z_seguro = altura + 5
