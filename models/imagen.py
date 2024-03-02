@@ -12,23 +12,22 @@ class Imagen:
         self.angle = 0
         self.centro = (0,0)
         self.mode = None
+        self.callback = None
 
     def cargar(self):
-       # while self.cap.isOpened():
-            print("camara abierta")
-            #time.sleep(1)
-            ret, imagen = self.cap.read()
-            if ret == True:    
-                self.imagen = imagen
-                #cv.imshow("img",self.imagen)
-                h,  w = self.imagen.shape[:2]
-                print(h,w)
-                self.undistorted_image()
-                self.show()
-                return True
-            else: 
-                self.cap.release()
-                return False
+       
+        ret, imagen = self.cap.read()
+        if ret == True:    
+            self.imagen = imagen
+            #cv.imshow("img",self.imagen)
+            h,  w = self.imagen.shape[:2]
+            print(h,w)
+            self.undistorted_image()
+            self.show()
+            return True
+        else: 
+            self.cap.release()
+            return False
         
 
     def set_cap(self,cap):
@@ -46,10 +45,11 @@ class Imagen:
     def show(self):
         
         imagen_display = cv.cvtColor(self.imagen, cv.COLOR_BGR2RGB)
+        cv.imshow("Imagen Laser", imagen_display)
         if self.mode == "camera" : 
             resolution = (480,640)
             imagen_display =cv.rotate(imagen_display, cv.ROTATE_90_COUNTERCLOCKWISE)
-        else:  resolution = (213,480)
+        else:  resolution = (640,480)
         imagensmall = cv.resize(imagen_display,resolution, interpolation=cv.INTER_CUBIC)
         imagensmall = Image.fromarray(imagensmall)
         imagensmall = ImageTk.PhotoImage(imagensmall)
@@ -64,14 +64,26 @@ class Imagen:
             if ret == True:
                 
                 self.imagen = imagen
+                #cv.imshow("Video Laser", imagen)
+                self.undistorted_image()
+                imagensmall = cv.resize(self.imagen,(1600,1200), interpolation=cv.INTER_CUBIC)
+                cv.imshow("Original Imagen Laser", imagensmall)
+                if self.callback != None :
+                    self.imagen = self.callback(self.imagen)
                 self.show()
+                
                 self.display.after(10, self._show2)
             else: self.cap.release()
         else: print('close')
 
-    def video(self,cap):
+    def video(self,cap,call = None):
         self.cap = cap
-        self.display.after(10, self._show2)
+        self.callback = call
+        self.id_funtion = self.display.after(10, self._show2)
+
+    def stop_video(self):
+        self.display.after_cancel(self.id_funtion)
+        cv.destroyAllWindows()
 
     def activate_quadrant(self):
         if (self.cap.isOpened()):

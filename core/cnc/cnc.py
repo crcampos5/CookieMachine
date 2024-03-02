@@ -2,6 +2,7 @@ import threading
 import serial.tools.list_ports
 import time
 from core.observer import Observer
+from core.parametros import Parametros
 from core.subject import Subject
 from typing import List
 
@@ -24,15 +25,17 @@ class Cnc(Subject):
         self.ishome = False
         self.isconect = False
         self.stop_ban = False
+        self.laser_on = False
         self.is_run = True
+        self.conection = None
+
+        self.parameters = Parametros()
+
         self.find_port()
-        self.modes = {
-            "Boquilla" : [0 , 0],
-            "Camara": [-18.2 , -168.5],
-            "Laser" : [10.6 , -181.8]
-        }
+        self.modes = self.parameters.get_parametro("modes")
+        self.feed_scan = 400
         self.selected_mode = self.modes["Boquilla"]
-        #self.status = threading.Thread(target=self.wait_idle)
+        self.laser_intensity = self.parameters.get_parametro("laser_intensity")
         
 
         
@@ -63,20 +66,24 @@ class Cnc(Subject):
         self.parameters = parameters
         
     #establece la conexión serial con la máquina CNC
-    def connect_serial(self, port, isopen):
+    def connect_serial(self, port, is_open):
         self.port = port
-        self.isconect = isopen
+        self.isconect = is_open
         if self.isconect == True :
             self.conection = serial.Serial(self.port, baudrate = 115200, timeout = 2)
             self.msg.insert("Conectado a la maquina")
             self._send("G10 P1 L20 X0 Y0 Z0")
             self.wait_idle()
-            self.isconect = True
         else :
             self.conection.close()
             self.msg.insert("Cerrando conexion con la maquina")
             self.isconect = False
         #time.sleep(0.1)
+            
+    def closecnc(self):
+        if self.conection != None :
+            self.laser_onoff(False)
+            self.conection.close()
 
     #envía la señal de "home" a la máquina CNC para mover sus ejes a las coordenadas de origen    
     def home(self):
@@ -99,34 +106,38 @@ class Cnc(Subject):
 
     #mueve un eje de la máquina CNC a una posición específica    
     def move(self,axis,value):
-        self.wait_idle()
-        code = "$J=G21G91"+axis+str(value)+"F"+str(self.pos.F)
-        #code = "G10P1L20X0Y0Z0\nG1X1F100"
-        #self._send("G10 P1 L20 X0 Y0 Z0")
-        #print(code)
-        data = self._send(code)
-        print("data",data)
-        self.wait_idle()
-        return "Termino"
+        if self._check():
+            self.wait_idle()
+            code = "$J=G21G91"+axis+str(value)+"F"+str(self.pos.F)
+            data = self._send(code)
+            print("data",data)
+            self.wait_idle()
+            return "Termino"
+        else : "No se pudo ejecutar el comando"
 
     #mueve la máquina CNC a una posición en el plano X-Y
     def movexy(self,x,y,mode = "Boquilla"):
-        offset_xy = self.modes[mode]
-        x = str(x + offset_xy[0])
-        y = str(y + offset_xy[1])
-        code = "G0G90 X"+ x + " Y" + y
-        data = self._send(code)
-        self.wait_idle()
+        if self._check():
+            offset_xy = self.modes[mode]
+            x = str(x + offset_xy[0])
+            y = str(y + offset_xy[1])
+            code = "G0G90 X"+ x + " Y" + y
+            data = self._send(code)
+            self.wait_idle()
+
+    #Esta función se encarga de mover un escáner a una posición específica
+    #en el eje X e Y, capturar imágenes con una cámara y devolver una lista de imágenes escaneadas.
     
-    def move_scan(self,x,y,cap):
-        offset_xy = self.modes["Laser"]
-        c = x - 100 + offset_xy[0] + 1
-        c_final = c + 100
+    def move_scan(self,x,y,cap, d = 100):
+        offset_xy = self.modes["Laser"] #Obtiene la compensacion para las coordenadas X e Y del modo de escaneo láser.
+        c = x - d + offset_xy[0] + 1 #Calcula la coordenada X inicial para el escaneo
+        c_final = c + d  
         print("c inicial: ", c)
-        x = str(x + offset_xy[0])
+        x = str(x + offset_xy[0]) #Ajusta las coordenadas x e y con el offset obtenido anteriormente.
         y = str(y + offset_xy[1])
-        self.laseronoff(True)
+        self.laser_onoff(True)
         q = 0
+        # Se ejecuta el siguiente while para darle tiempo a la camara que ajuste sus parametros 
         while q < 3:
             a_time = time.time()
             ret, imagen = cap.read()
@@ -135,15 +146,18 @@ class Cnc(Subject):
             q += 1
         
         list_images = []
-        code = "G1 X"+ x + " Y" + y + " F400"
+        code = "G1 X"+ x + " Y" + y + " F" + self.feed_scan
         str_send = (code +"\n").encode()
        
         start_time = time.time()
         self.conection.write(str_send)
         self.conection.reset_input_buffer()       
-
+        #Envía un comando para obtener la posición actual del escaner.
+        #Lee la respuesta del escáner.
+        #Comprueba si la posición actual coincide con la posición deseada para escanear. 
+        #Si coincide, captura una imagen utilizando la cámara y la agrega a list_images.
         while 1 :
-            time.sleep(0.03)
+            time.sleep(0.03) # este parametro esta relacionado con feed scan            
             str_send = ("?\n").encode()
             self.conection.write(str_send)
             data = self.conection.readline().decode('ascii')
@@ -174,22 +188,20 @@ class Cnc(Subject):
 
         print("Time: ", end_time - start_time )
         print("Cantidad de imagenes: ", len(list_images))
-        self.laseronoff(False)
+        self.laser_onoff(False)
         return list_images
 
 
-
-    
     def move_to_quadrant(self,mode = "Boquilla"):
         quadrant = self.parameters["quadrants"][0]
         self.movexy(quadrant[0],quadrant[1],mode)
         
-
     #desbloquea la máquina CNC en caso de que esté en estado de alarma
     def disable_alarm(self):
         self.msg.insert("Desbloqueando...")
         self._send("$X")
         self.wait_idle()
+        self.alarm = False
         self.msg.insert("Maquina desbloqueada")
 
     #espera a que la máquina CNC esté en estado de reposo antes de continuar con el siguiente comando
@@ -222,7 +234,7 @@ class Cnc(Subject):
                     #print('[INFO] State: ', state)
                     sigo = self.process_out(state)
             else:  break
-
+    #envía una lista de comandos Gcode a la máquina CNC para ser ejecutados es mas rapido
     def ejecutar_gcode2(self,gcode):
         start_time = time.time()
         number_line = 0
@@ -267,14 +279,12 @@ class Cnc(Subject):
 
 
     def _send(self,code):
-        if self.isconect :
             str_send = (code +"\n").encode()
             self.conection.write(str_send)
             #time.sleep(0.001)
             data = self.conection.readline().decode('ascii')
             self.conection.reset_input_buffer()
             return data
-        else: self.msg.insert("Maquina esta desconectada")
 
     def process_out(self,data):
         if len(data)>1 : #  and "<" in data:
@@ -303,26 +313,50 @@ class Cnc(Subject):
         else: False
 
     # activa o desactiva el láser de la máquina CNC
-    def laseronoff(self, ban: bool):
-        if ban :
-            self.msg.insert("Activando laser")
-            data = self._send("G1 S100 F100")
-            print(data)
-            data = self._send("M3")
-        else :
-            data = self._send("M5")
-            self.msg.insert("Desactivando laser")
-            print(data)
+    def laser_onoff(self, ban: bool):
+        if self._check():
+            self.laser_on = ban
+            if self.laser_on :
+                self.msg.insert("Activando laser")
+                data = self._send("G1 S" + str(self.laser_intensity) +"F100")
+                print(data)
+                data = self._send("M3")
+            else :
+                data = self._send("M5")
+                self.msg.insert("Desactivando laser")
+                print(data)
+
+            self.notify()
+        else : return False
+        
+
+    def laserpower(self, p):
+        if self._check():    
+            self.laser_intensity = p
+            code = "G1 S" + str(p) + " F100"
+            data = self._send(code)
+            return True
+        else : return False
+            
+       
 
     def pause(self):
-        self.msg.insert("Pausando...")
-        self._send("!")
-        self.wait_idle()
-        self.msg.insert("Maquina pausada")
+        if self._check():
+            self.msg.insert("Pausando...")
+            self._send("!")
+            self.wait_idle()
+            self.msg.insert("Maquina pausada")
 
     def stop(self):
         self.msg.insert("Parando...")
         self.stop_ban = True
         self.msg.insert("Maquina parada")
+
+    def _check(self):
+        if self.isconect : return True
+        else : 
+            self.msg.insert("Maquina esta desconectada")
+            return False
+
         
 

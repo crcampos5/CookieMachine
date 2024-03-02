@@ -6,6 +6,7 @@ from PIL import Image, ImageTk
 import os
 import cv2 as cv
 from pynput import keyboard
+import pygetwindow as gw
 
 class MoveFrame(ComponentFrame):
     def __init__(self,parent,cnc = None) -> None:
@@ -93,7 +94,9 @@ class MoveFrame(ComponentFrame):
         return valor
     
     def pulsa(self,tecla):
-        if self.solto == False:
+        active_window = gw.getActiveWindow()
+        if active_window is not None and active_window.title == "Cookie Machine":
+        
             if str(tecla) == "Key.right" :
                 self.move_xplus()
             if str(tecla) == "Key.left" :
@@ -106,7 +109,7 @@ class MoveFrame(ComponentFrame):
                 self.move_zplus()
             if str(tecla) == "Key.page_down" :
                 self.move_zminus()
-        else: self.solto = True
+        
 
     def suelta(self,tecla):
         self.solto = True

@@ -7,6 +7,7 @@
 import importlib
 import json
 from core.cnc.cnc import Cnc
+from core.parametros import Parametros
 from core.scanner import Scanner
 from core.sensors.camerasensor import CameraSensor
 from core.sensors.lasersensor import LaserSensor
@@ -14,22 +15,21 @@ from models.message import Message
 from core.template import Template
 
 class Core:
-    def __init__(self,cam : CameraSensor,laser : LaserSensor,cnc : Cnc) -> None:
+    def __init__(self,cam : CameraSensor,cnc : Cnc) -> None:
         self.cam = cam
-        self.laser = laser
+        self.laser = LaserSensor()
         self.cnc = cnc
         self.file = None
         self.stop_ban = False
 
-        with open('parameters/parameters.json', 'r') as f:
-            self.parameters = json.load(f)
-            self.quadrants = self.parameters["parameters"]["quadrants"]
-            self.laser_distance_inyector =self.parameters["parameters"]["laser_distance_inyector"]
-            self.resolution = self.parameters["parameters"]["resolution"]
-            self.valor_pixel_to_mm = self.parameters["parameters"]["valor_pixel_to_mm"]
-            print(self.quadrants)
-            f.close()
-        self.cnc.set_parameters(self.parameters["parameters"])
+        self.parameters = Parametros()
+
+        self.quadrants = self.parameters.get_parametro("quadrants")
+        self.resolution = self.parameters.get_parametro("resolution")
+        self.valor_pixel_to_mm = self.parameters.get_parametro("valor_pixel_to_mm")
+        print(self.quadrants)
+            
+        self.cnc.set_parameters(self.parameters)
     #Esta función run() se encarga de ejecutar el proceso principal de la aplicación.
     #utiliza la ruta del archivo seleccionado para importar la clase correspondiente 
     #y crear una instancia de ella. Luego, crea una instancia de la clase Template, 

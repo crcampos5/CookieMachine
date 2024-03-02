@@ -8,10 +8,12 @@ from core.core import Core
 from core.observer import Observer
 from core.subject import Subject
 from gui.componentframe import ComponentFrame
+from gui.windows.config_laser_window import ConfigLaserWindow
 
 class TopBarFrame(ComponentFrame,Observer):
     def __init__(self,parent,cnc = None) -> None:
         super().__init__(parent)
+        self.parent = parent
         self.cnc = cnc
         self.activ_connection = False
 
@@ -73,8 +75,9 @@ class TopBarFrame(ComponentFrame,Observer):
         self.btn_conect = tk.Button(self.wrap1,text='Conectar',command=self.connect,image=self.img_off,width=80,compound = tk.LEFT)
         self.btn_alarm = tk.Button(self.wrap1,text=' Unlock',command=self.disabled_lock,image=self.img_off,width=80,compound = tk.LEFT)
         self.btn_alarm.image = self.img_off
-        self.btn_reset = tk.Button(self.wrap1,text=' Reset',command=self.reset,image=self.img_off,width=80,compound = tk.LEFT)
+        self.btn_reset = ttk.Button(self.wrap1,text='Reset',command=self.reset,image=self.img_off,compound = tk.LEFT)
         self.btn_reset.image = self.img_off
+        self.btn_open_window = ttk.Button(self.wrap1,text='Config',command=self.open_window,compound = tk.LEFT)
         self.lbl_design  = tk.Label(self, text='Diseño:')
         self.cbx_design = ttk.Combobox(self,values=self.list_design,textvariable=self.selected_design)
         self.cbx_design.bind('<<ComboboxSelected>>', self.select)
@@ -84,12 +87,16 @@ class TopBarFrame(ComponentFrame,Observer):
         self.btn_conect.grid(row=0,column=2,pady=2,padx=5)
         self.btn_alarm.grid(row=0,column=3)
         self.btn_reset.grid(row=0,column=4)
+        self.btn_open_window.grid(row=0,column=5)
         self.lbl_design.grid(row=0,column=1,padx=5,pady=5)
         self.cbx_design.grid(row=0,column=2,pady=5,padx=5)
 
     
     def select(self,e):
         self.core.file = self.archivos[self.selected_design.get()]
+    
+    def open_window(self):
+        config_laser_window = ConfigLaserWindow(self.parent)
 
 
     def disabled_lock(self):
