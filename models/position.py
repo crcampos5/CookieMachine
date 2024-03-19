@@ -3,7 +3,7 @@
 class Position:
     def __init__(self,root) -> None:
         self.root = root
-        self.X = 1.0
+        self.X = 0.0
         self.Y = 0.0
         self.Z = 0.0
         self.F = 200

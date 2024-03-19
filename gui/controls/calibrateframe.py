@@ -14,7 +14,7 @@ class CalibrateFrame(ComponentFrame):
         self.rbt_camara = tk.Radiobutton(self, text="Camara",bg='gray90',command=self.calibrate,variable=self.option, value=2)
         self.rbt_laser = tk.Radiobutton(self, text="Laser",bg='gray90',command=self.calibrate,variable=self.option, value=3)
 
-        btn_calibrar = tk.Button(self,text='CALIBRAR',font=("Verdana", 12,'bold'),width=8,command=self.calibrar)
+        btn_calibrar = tk.Button(self,text='Barrer',font=("Verdana", 12,'bold'),width=8,command=self.calibrar)
 
         self.rbt_boquilla.grid(row=0,column=0,padx=5,pady=10)
         self.rbt_camara.grid(row=1,column=0,padx=5)
@@ -49,4 +49,4 @@ class CalibrateFrame(ComponentFrame):
 
 
     def calibrar(self):
-        pass
+        self.cnc.sweep_area()

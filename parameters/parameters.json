@@ -16,7 +16,7 @@
         "Camara": [-18.2 , -168.5],
         "Laser" : [10.6 , -181.8]
     },
-    "laser_intensity" : 220,
-    "expositure" : -7
+    "laser_intensity" : 200,
+    "expositure" : -8
     
 }

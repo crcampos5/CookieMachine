@@ -38,8 +38,8 @@ class LaserFrame(ComponentFrame,Observer):
         self.btn_laser.image = self.img_off
         btn_capture = tk.Button(self,text=' CAPTURE',font=("Verdana", 12,'bold'),width=110,image=self.img_off,compound = tk.LEFT,anchor=tk.W,command=self.capture)
         btn_capture.image = self.img_off
-        btn_calibrate = tk.Button(self,text=' Escanear',font=("Verdana", 12,'bold'),width=110,image=self.img_off,compound = tk.LEFT,anchor=tk.W,command=self.calibrate)
-        btn_calibrate.image = self.img_off
+        btn_escanear = tk.Button(self,text=' Escanear',font=("Verdana", 12,'bold'),width=110,image=self.img_off,compound = tk.LEFT,anchor=tk.W,command=self.escanear)
+        btn_escanear.image = self.img_off
         self.slr_laser_power = ttk.Scale(self,from_=500,to=0,orient='vertical',variable=self.laser_power,length=150,command=self.set_laserpower)
 
         self.cbx_config.grid(row=0,column=0,padx=5, sticky='w')
@@ -48,7 +48,7 @@ class LaserFrame(ComponentFrame,Observer):
 
         self.btn_laser.grid(row=3,column=0)
         btn_capture.grid(row=4,column=0,padx=5)
-        btn_calibrate.grid(row=5,column=0)
+        btn_escanear.grid(row=5,column=0)
         self.slr_laser_power.grid(row=0,column=1, rowspan=6, padx=5)
 
        
@@ -87,25 +87,12 @@ class LaserFrame(ComponentFrame,Observer):
             self.btn_laser.config(image = self.img_off)
             self.btn_laser.image = self.img_off
     
-    def calibrate(self):
-        #self.cnc.move_to_quadrant("Laser")
-        self.laser_sensor.scan_line([-931.6,-73.2])
+    def escanear(self):
+        #self.laser_sensor.scan_line([-931.6,-73.2])
+        self.laser_sensor.sweep_scan([-931.6,-73.2])
 
     def capture(self):
         pass
-
-    #def set_rojos(self,redBajo1,redAlto1,redBajo2,redAlto2):
-    #    self.laser_sensor.set_rojos(redBajo1,redAlto1,redBajo2,redAlto2)
-
-    #def set_binary(self, binary_ban, umbral):
-    #    self.laser_sensor.set_binary(binary_ban, umbral)
-
-    #def set_linea_media(self, b):
-    #    self.laser_sensor.linea_media_ban = b
-
-    #def get_focus(self):
-    #    f = self.laser_sensor.get_focus()
-    #    return f
 
     def set_laserpower(self,e):
         self.cnc.laserpower(self.laser_power.get())

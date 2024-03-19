@@ -68,6 +68,16 @@ class LineGcode:
             return True
         else : return False
 
+    def get_x (self):
+        if "X" in self.segmentos:
+            return self.segmentos["X"]
+        else : return None
+    
+    def get_y (self):
+        if "Y" in self.segmentos:
+            return self.segmentos["Y"]
+        else : return None
+
                 
     
 

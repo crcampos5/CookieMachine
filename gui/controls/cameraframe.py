@@ -44,3 +44,6 @@ class CameraFrame(ComponentFrame):
         if self.check_quadrant.get() :
             self.camera_sensor.search_quadrant()
         else: self.camera_sensor.exit_quadrant()
+
+    
+        
